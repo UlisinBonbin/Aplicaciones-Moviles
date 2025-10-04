@@ -1,5 +1,7 @@
 package com.example.tienda_bonbin.viewmodels
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.tienda_bonbin.navigation.NavigationEvent
 import com.example.tienda_bonbin.navigation.Screen
@@ -31,4 +33,7 @@ class MainViewModel: ViewModel() {
             _navigationEvents.emit(NavigationEvent.NavigateUp)
         }
     }
+
+    private val _nombre = mutableStateOf("Prueba")
+    val nombre: State<String> =_nombre
 }
