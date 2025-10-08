@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +27,7 @@ import com.example.tienda_bonbin.viewmodels.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.tienda_bonbin.navigation.AppNavigation
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +60,13 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
+                Scaffold{ innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)){
+                        AppNavigation()
+                    }
+                }
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
