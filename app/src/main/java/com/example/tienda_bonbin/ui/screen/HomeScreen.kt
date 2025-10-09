@@ -37,30 +37,49 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     navController: NavController,
     viewModel: MainViewModel = viewModel()
-){
-    val drawerState= rememberDrawerState(initialValue = DrawerValue.Closed)
+) {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
-        drawerState= drawerState,
+        drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
                 Text("Menú", modifier = Modifier.padding(16.dp))
+
                 NavigationDrawerItem(
-                    label = {Text("Ir al Perifl")},
+                    label = { Text("Ir al Perfil") },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
                         viewModel.navigateTo(Screen.Profile)
                     }
                 )
+
+                NavigationDrawerItem(
+                    label = { Text("Ir a Registro") }, // <-- Ahora sí dentro del drawer
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        viewModel.navigateTo(Screen.Registro)
+                    }
+                )
+
+                NavigationDrawerItem(
+                    label = { Text("Ir a Configuración") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        viewModel.navigateTo(Screen.Settings)
+                    }
+                )
             }
         }
     ) {
-        Scaffold (
+        Scaffold(
             topBar = {
                 TopAppBar(
-                    title = {Text("Pantalla de Home")},
+                    title = { Text("Pantalla de Home") },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch { drawerState.open() }
@@ -70,18 +89,18 @@ fun HomeScreen(
                     }
                 )
             }
-        ){ innerPadding ->
+        ) { innerPadding ->
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
-            ){
-                val nombre =viewModel.nombre.value
+            ) {
+                val nombre = viewModel.nombre.value
                 Text("Bienvenido otra vez $nombre!")
                 Spacer(modifier = Modifier.height(16.dp))
-                Button( onClick = {viewModel.navigateTo(Screen.Settings) }){
+                Button(onClick = { viewModel.navigateTo(Screen.Settings) }) {
                     Text("Ir a la configuración")
                 }
             }

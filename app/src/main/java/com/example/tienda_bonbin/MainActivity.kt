@@ -28,6 +28,8 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.tienda_bonbin.navigation.AppNavigation
+import com.example.tienda_bonbin.ui.screen.RegistroScreen
+import com.example.tienda_bonbin.viewmodels.UsuarioViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,7 +86,12 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.Settings.route) {
                             SettingsScreen(navController = navController, viewModel = viewModel)
                         }
-
+                        composable(Screen.Registro.route) {
+                            val usuarioViewModel: UsuarioViewModel = viewModel()
+                            RegistroScreen(
+                                navController = navController,
+                                viewModel = usuarioViewModel)
+                        }
                     }
                 }
             }
@@ -105,6 +112,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     TiendaBonbinTheme {
-        Greeting("Android")
+        Greeting("Ulises")
     }
 }
