@@ -24,5 +24,6 @@ fun AppNavigation(){
         composable("Resumen") {
             ResumenScreen(usuarioViewModel)
         }
+
     }
 }

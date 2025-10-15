@@ -1,6 +1,7 @@
 package com.example.tienda_bonbin
 
 import android.os.Bundle
+import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.tienda_bonbin.navigation.AppNavigation
+import com.example.tienda_bonbin.ui.screen.PantallaPrincial
 import com.example.tienda_bonbin.ui.screen.RegistroScreen
 import com.example.tienda_bonbin.viewmodels.UsuarioViewModel
 
@@ -36,6 +39,7 @@ import com.example.tienda_bonbin.viewmodels.UsuarioViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
         setContent {
             TiendaBonbinTheme {
@@ -61,6 +65,10 @@ class MainActivity : ComponentActivity() {
                             is NavigationEvent.NavigateUp -> navController.navigateUp()
                         }
                     }
+                }
+
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    PantallaPrincial(modifier = Modifier.padding(innerPadding))
                 }
 
                 Scaffold{ innerPadding ->
