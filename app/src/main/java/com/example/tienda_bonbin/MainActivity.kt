@@ -1,7 +1,6 @@
 package com.example.tienda_bonbin
 
 import android.os.Bundle
-import android.view.Window
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.tienda_bonbin.navigation.NavigationEvent
 import com.example.tienda_bonbin.navigation.Screen
@@ -30,8 +28,10 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.tienda_bonbin.navigation.AppNavigation
+import com.example.tienda_bonbin.navigation.AppRoute
 import com.example.tienda_bonbin.ui.screen.PantallaPrincial
 import com.example.tienda_bonbin.ui.screen.RegistroScreen
+import com.example.tienda_bonbin.viewmodels.EstadoViewModel
 import com.example.tienda_bonbin.viewmodels.UsuarioViewModel
 
 
@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TiendaBonbinTheme {
                 val viewModel: MainViewModel = viewModel()
+                val viewModelEstado: EstadoViewModel=viewModel()
                 val navController = rememberNavController()
 
                 LaunchedEffect(key1 = Unit) {
@@ -82,16 +83,21 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.Home.route,
+                        startDestination = AppRoute.PantallaPrincipal.route,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable(route = Screen.Home.route) {
+                        composable(route= AppRoute.PantallaPrincipal.route) {
+                            PantallaPrincial(Modifier,  viewModelEstado)
+                        }
+
+                        composable(route = AppRoute.Home.route) {
                             HomeScreen(navController = navController, viewModel = viewModel)
                         }
-                        composable(route = Screen.Profile.route) {
+
+                        composable(route = AppRoute.Profile.route) {
                             ProfileScreen(navController = navController, viewModel = viewModel)
                         }
-                        composable(route = Screen.Settings.route) {
+                        composable(route = AppRoute.Settings.route) {
                             SettingsScreen(navController = navController, viewModel = viewModel)
                         }
                         composable(Screen.Registro.route) {
@@ -102,6 +108,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
             }
         }
     }

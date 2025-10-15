@@ -28,7 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tienda_bonbin.viewmodels.EstadoViewModel
 
 @Composable
-fun PantallaPrincial(modifier: Modifier, viewModel: EstadoViewModel= viewModel()){
+fun PantallaPrincial(modifier: Modifier, viewModel: EstadoViewModel = viewModel()){
     val estado = viewModel.activo.collectAsState()
     val mostrarMensaje = viewModel.mostrarMensaje.collectAsState()
 
