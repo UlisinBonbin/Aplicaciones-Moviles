@@ -1,4 +1,5 @@
 package com.example.tienda_bonbin.ui.screen
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -25,10 +26,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController // <-- 1. AÑADE ESTA IMPORTACIÓN
+import com.example.tienda_bonbin.navigation.Screen // <-- 2. AÑADE ESTA IMPORTACIÓN
 import com.example.tienda_bonbin.viewmodels.EstadoViewModel
 
 @Composable
-fun PantallaPrincial(modifier: Modifier, viewModel: EstadoViewModel = viewModel()){
+fun PantallaPrincial(
+    modifier: Modifier,
+    navController: NavController, // <-- 3. AÑADE NAVCONTROLLER COMO PARÁMETRO
+    viewModel: EstadoViewModel = viewModel()
+){
     val estado = viewModel.activo.collectAsState()
     val mostrarMensaje = viewModel.mostrarMensaje.collectAsState()
 
@@ -52,8 +59,8 @@ fun PantallaPrincial(modifier: Modifier, viewModel: EstadoViewModel = viewModel(
 
         Column(
             modifier=modifier
-            .fillMaxSize()
-            .padding(32.dp),
+                .fillMaxSize()
+                .padding(32.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -70,13 +77,35 @@ fun PantallaPrincial(modifier: Modifier, viewModel: EstadoViewModel = viewModel(
 
             AnimatedVisibility(visible = mostrarMensaje.value) {
                 Text(
-                    text = "¡Estado gaurdado exitosamente!",
+                    text = "¡Estado guardado exitosamente!",
                     color = Color(0xFF4CAF50),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
+
+            // --- 4. AQUÍ AÑADES EL BOTÓN PARA NAVEGAR ---
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    // Acción de navegar a la pantalla de Registro
+                    navController.navigate(Screen.Registro.route)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ir a Registro")
+            }
+
+            // Ejemplo: Botón para ir a la pantalla de Inicio/Login
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                    // Navega a la pantalla de Inicio
+                    navController.navigate(Screen.Inicio.route)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ir a Inicio (Login)")
+            }
         }
     }
-
-
 }
