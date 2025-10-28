@@ -15,5 +15,5 @@ sealed class Screen(val route: String) {
         }
     }
 
-    //esto es especialmente para el catálogo, para mostrar un producto (itemId) dentro de una página (catálogo)
+    data object Catalogo : Screen("catalogo")
 }

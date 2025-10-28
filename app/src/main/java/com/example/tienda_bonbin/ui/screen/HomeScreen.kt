@@ -94,7 +94,7 @@ fun HorizontalNavBar(viewModel: MainViewModel) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         item { NavBarItem(text = "Inicio", onClick = { /* Ya estás aquí */ }, isSelected = true) }
-        item { NavBarItem(text = "Catálogo", onClick = { /* viewModel.navigateTo(Screen.Catalogo) */ }) }
+        item { NavBarItem(text = "Catálogo", onClick = { viewModel.navigateTo(Screen.Catalogo) }) }
         item { NavBarItem(text = "Mi Perfil", onClick = { viewModel.navigateTo(Screen.Profile) }) }
         item { NavBarItem(text = "Iniciar Sesión", onClick = { viewModel.navigateTo(Screen.Inicio) }) }
         item { NavBarItem(text = "Registro", onClick = { viewModel.navigateTo(Screen.Registro) }) }

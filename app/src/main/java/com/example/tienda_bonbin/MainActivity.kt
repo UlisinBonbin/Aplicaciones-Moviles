@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tienda_bonbin.navigation.NavigationEvent // <-- Importación necesaria
 import com.example.tienda_bonbin.navigation.Screen
+import com.example.tienda_bonbin.ui.screen.CatalogoScreen
 import com.example.tienda_bonbin.ui.screen.HomeScreen
 import com.example.tienda_bonbin.ui.screen.InicioScreen
 import com.example.tienda_bonbin.ui.screen.PantallaPrincial
@@ -107,15 +108,10 @@ fun AppContainer() {
                 )
             }
 
-            // Nota: La ruta "PantallaPrincipal" debe ser definida en tu clase Screen.kt si planeas usarla.
-            // Por ejemplo: data object PantallaPrincipal : Screen("pantalla_principal")
-            // composable(route = Screen.PantallaPrincipal.route) {
-            //     PantallaPrincial(
-            //         modifier = Modifier,
-            //         navController = navController,
-            //         viewModel = estadoViewModel
-            //     )
-            // }
+            composable(route = Screen.Catalogo.route) {
+                CatalogoScreen(navController = navController)
+            }
+
         }
     }
 }
