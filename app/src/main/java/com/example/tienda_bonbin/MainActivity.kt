@@ -99,10 +99,11 @@ fun AppContainer() {
                     viewModel = usuarioViewModel
                 )
             }
+
             composable(route = Screen.Registro.route) {
                 RegistroScreen(
-                    navController = navController,
-                    viewModel = usuarioViewModel
+                    navController = navController
+                    // <-- Ya no se pasa el viewModel. La pantalla lo obtiene sola.
                 )
             }
 

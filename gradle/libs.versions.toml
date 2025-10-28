@@ -1,28 +1,27 @@
 [versions]
-agp = "8.11.2"
+lifecycleViewModelCompose = "2.6.1"
+lifecycleRuntimeCompose = "2.6.0"
+agp = "8.4.1"
 datastorePreferences = "1.1.7"
-kotlin = "2.0.21"
+kotlin = "1.9.23"
 coreKtx = "1.10.1"
 junit = "4.13.2"
+ksp = "1.9.23-1.0.19"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-kotlinCoroutinesAndroid = "<latest>"
-kotlinxCoroutinesAndroid = "1.10.2"
-lifecycleRuntimeCompose = "2.9.4"
+kotlinxCoroutinesAndroid = "1.8.0"
 lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.8.0"
-composeBom = "2024.09.00"
-lifecycleViewmodelCompose = "<latest>"
-lifecycleViewmodelComposeVersion = "2.9.4"
-navigationCompose = "2.9.5"
+composeBom = "2024.06.00"
+navigationCompose = "2.7.7"
+composeCompiler = "1.5.15"
+
 
 [libraries]
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewModelCompose" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleViewmodelCompose" }
-androidx-lifecycle-runtime-compose-v294 = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
-androidx-lifecycle-viewmodel-compose-v294 = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelComposeVersion" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -37,11 +36,9 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-kotlin-coroutines-android = { module = "org.jetbrains.kotlin:kotlin-coroutines-android", version.ref = "kotlinCoroutinesAndroid" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
