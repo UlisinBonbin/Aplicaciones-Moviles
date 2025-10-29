@@ -25,7 +25,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.tienda_bonbin.navigation.Screen
-// --- IMPORTACIONES AÑADIDAS ---
+import com.example.tienda_bonbin.data.Producto
 import com.example.tienda_bonbin.ui.theme.ChocolateBrown
 import com.example.tienda_bonbin.ui.theme.CreamBackground
 import com.example.tienda_bonbin.ui.theme.DarkTextColor
@@ -34,7 +34,6 @@ import com.example.tienda_bonbin.viewmodels.MainViewModel
 
 // El comentario de la paleta de colores se ha eliminado porque ahora está en ui/theme/Color.kt
 
-data class Product(val imageUrl: String, val title: String, val price: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -166,21 +165,25 @@ fun WelcomeBanner() {
 
 @Composable
 fun FeaturedProductsSection(navController: NavController) {
-    val products = listOf(
-        Product(
-            imageUrl = "https://images.aws.nestle.recipes/original/2024_10_23T06_40_18_badun_images.badun.es_tarta_fria_de_chocolate_blanco_con_frutas.jpg",
-            title = "Torta de Chocolate Blanco",
-            price = "$18.500"
+    // --- ↓↓↓ AJUSTA ESTA LISTA ↓↓↓ ---
+    val productos = listOf(
+        Producto(
+            id = 1, // ID de ejemplo
+            imagenUrl = "https://images.aws.nestle.recipes/original/2024_10_23T06_40_18_badun_images.badun.es_tarta_fria_de_chocolate_blanco_con_frutas.jpg",
+            nombre = "Torta de Chocolate Blanco",
+            precio = 18500.0 // Ahora es un número (Double)
         ),
-        Product(
-            imageUrl = "https://tortamaniaecuador.com/wp-content/uploads/2022/12/Vainilla-con-crema-pequena-300x300.png",
-            title = "Pastel de Vainilla y Crema",
-            price = "$12.000"
+        Producto(
+            id = 2,
+            imagenUrl = "https://tortamaniaecuador.com/wp-content/uploads/2022/12/Vainilla-con-crema-pequena-300x300.png",
+            nombre = "Pastel de Vainilla y Crema",
+            precio = 12000.0
         ),
-        Product(
-            imageUrl = "https://rhenania.cl/wp-content/uploads/2020/12/CIRUELA-MANJAR-BLANCO.jpg",
-            title = "Torta de Ciruela y Manjar",
-            price = "$16.990"
+        Producto(
+            id = 3,
+            imagenUrl = "https://rhenania.cl/wp-content/uploads/2020/12/CIRUELA-MANJAR-BLANCO.jpg",
+            nombre = "Torta de Ciruela y Manjar",
+            precio = 16990.0
         )
     )
 
@@ -208,11 +211,12 @@ fun FeaturedProductsSection(navController: NavController) {
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(products) { product ->
+            items(productos) { producto ->
                 ProductCard(
-                    imageUrl = product.imageUrl,
-                    title = product.title,
-                    price = product.price
+                    imageUrl = producto.imagenUrl, // Usar el campo correcto: `imagenUrl`
+                    title = producto.nombre,       // Usar el campo correcto: `nombre`
+                    // Formatear el precio de Double a String
+                    price = "$${"%,.0f".format(producto.precio).replace(',', '.')}"
                 )
             }
         }
