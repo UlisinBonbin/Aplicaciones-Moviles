@@ -5,31 +5,37 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tienda_bonbin.ui.screen.HomeScreen
+import com.example.tienda_bonbin.ui.screen.LoginScreen
+import com.example.tienda_bonbin.ui.screen.ProfileScreen
 import com.example.tienda_bonbin.ui.screen.RegistroScreen
-import com.example.tienda_bonbin.ui.screen.ResumenScreen
-// Asegúrate de importar AMBOS ViewModels
-import com.example.tienda_bonbin.viewmodels.RegistroViewModel
-import com.example.tienda_bonbin.viewmodels.UsuarioViewModel
+import com.example.tienda_bonbin.viewmodels.AppViewModelProvider
+import com.example.tienda_bonbin.viewmodels.MainViewModel
 
 @Composable
-fun AppNavigation(){
+fun AppNavigation() {
     val navController = rememberNavController()
-    // El UsuarioViewModel sigue aquí, lo usará la pantalla de Resumen
-    val usuarioViewModel: UsuarioViewModel = viewModel()
 
+    // Creamos una instancia del MainViewModel que gestionará la navegación
+    val mainViewModel: MainViewModel = viewModel()
+
+    // --- LÍNEA ELIMINADA ---
+    // mainViewModel.navController = navController // Ya no es necesaria
+
+    // NavHost es el componente que gestiona las "pantallas" de tu app
     NavHost(
         navController = navController,
-        startDestination = "Registro"
-    ){
-        composable("Registro") {
-            // ¡AQUÍ ESTÁ EL CAMBIO!
-            // Creamos una instancia del ViewModel que esta pantalla necesita.
-            val registroViewModel: RegistroViewModel = viewModel()
-            RegistroScreen(navController, registroViewModel) // Le pasamos el ViewModel correcto
+        // La pantalla inicial será HomeScreen
+        startDestination = Screen.Home.route
+    ) {
+        // ... (el resto del código permanece exactamente igual)
+
+        composable(Screen.Home.route) {
+            HomeScreen(
+                navController = navController,
+                viewModel = mainViewModel
+            )
         }
-        composable("Resumen") {
-            // La pantalla de Resumen sigue usando el UsuarioViewModel
-            ResumenScreen(usuarioViewModel)
-        }
+        // ... etc
     }
 }

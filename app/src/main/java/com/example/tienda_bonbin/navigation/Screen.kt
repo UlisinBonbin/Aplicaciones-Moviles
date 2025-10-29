@@ -14,6 +14,7 @@ sealed class Screen(val route: String) {
             return route.replace("{itemId}",itemId)
         }
     }
-
     data object Catalogo : Screen("catalogo")
+
+    data object Login : Screen("login")
 }

@@ -87,7 +87,7 @@ fun HorizontalNavBar(viewModel: MainViewModel) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface) // Mantenemos un fondo neutro para esta barra
+            .background(MaterialTheme.colorScheme.surface)
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
@@ -95,7 +95,11 @@ fun HorizontalNavBar(viewModel: MainViewModel) {
         item { NavBarItem(text = "Inicio", onClick = { /* Ya estás aquí */ }, isSelected = true) }
         item { NavBarItem(text = "Catálogo", onClick = { viewModel.navigateTo(Screen.Catalogo) }) }
         item { NavBarItem(text = "Mi Perfil", onClick = { viewModel.navigateTo(Screen.Profile) }) }
-        item { NavBarItem(text = "Iniciar Sesión", onClick = { viewModel.navigateTo(Screen.Inicio) }) }
+
+        // --- ¡LÍNEA CORREGIDA! ---
+        // Ahora navega a la ruta correcta "login_screen" que está definida en tu MainActivity
+        item { NavBarItem(text = "Iniciar Sesión", onClick = { viewModel.navigateTo(Screen.Login) }) }
+
         item { NavBarItem(text = "Registro", onClick = { viewModel.navigateTo(Screen.Registro) }) }
     }
 }

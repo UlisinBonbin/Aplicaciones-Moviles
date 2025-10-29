@@ -16,19 +16,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.tienda_bonbin.navigation.NavigationEvent // <-- Importación necesaria
+import com.example.tienda_bonbin.navigation.NavigationEvent
 import com.example.tienda_bonbin.navigation.Screen
 import com.example.tienda_bonbin.ui.screen.CatalogoScreen
 import com.example.tienda_bonbin.ui.screen.HomeScreen
-import com.example.tienda_bonbin.ui.screen.InicioScreen
-import com.example.tienda_bonbin.ui.screen.PantallaPrincial
+import com.example.tienda_bonbin.ui.screen.LoginScreen
 import com.example.tienda_bonbin.ui.screen.ProfileScreen
 import com.example.tienda_bonbin.ui.screen.RegistroScreen
-import com.example.tienda_bonbin.ui.screen.SettingsScreen
 import com.example.tienda_bonbin.ui.theme.TiendaBonbinTheme
-import com.example.tienda_bonbin.viewmodels.EstadoViewModel
+import com.example.tienda_bonbin.viewmodels.AppViewModelProvider
 import com.example.tienda_bonbin.viewmodels.MainViewModel
-import com.example.tienda_bonbin.viewmodels.UsuarioViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +35,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TiendaBonbinTheme {
-                // Contenedor principal que organiza toda la navegación de la app.
                 AppContainer()
             }
         }
@@ -47,26 +43,18 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppContainer() {
-    // 1. INICIALIZACIÓN ÚNICA
-    // Se declaran una sola vez para que se compartan en toda la app.
     val navController = rememberNavController()
     val mainViewModel: MainViewModel = viewModel()
-    val usuarioViewModel: UsuarioViewModel = viewModel() // ViewModel para Inicio y Registro
-    val estadoViewModel: EstadoViewModel = viewModel()
 
-    // 2. LISTENER DE EVENTOS DE NAVEGACIÓN
-    // Este código escucha cuando llamas a viewModel.navigateTo(...) y ejecuta la navegación.
+    // Si tu MainViewModel controla la navegación a través de eventos,
+    // este LaunchedEffect es correcto.
     LaunchedEffect(key1 = Unit) {
         mainViewModel.navigationEvents.collectLatest { event ->
             when (event) {
-                is NavigationEvent.NavigateTo -> {
-                    navController.navigate(event.route.route) {
-                        event.popUpToRoute?.let {
-                            popUpTo(it.route) { inclusive = event.inclusive }
-                        }
-                        launchSingleTop = event.singleTop
-                        restoreState = true
-                    }
+                is NavigationEvent.NavigateTo -> navController.navigate(event.route.route) {
+                    event.popUpToRoute?.let { popUpTo(it.route) { inclusive = event.inclusive } }
+                    launchSingleTop = event.singleTop
+                    restoreState = true
                 }
                 is NavigationEvent.PopBackStack -> navController.popBackStack()
                 is NavigationEvent.NavigateUp -> navController.navigateUp()
@@ -74,49 +62,45 @@ fun AppContainer() {
         }
     }
 
-    // 3. ESTRUCTURA VISUAL PRINCIPAL
-    // Un solo Scaffold y un solo NavHost para toda la app.
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         NavHost(
             navController = navController,
-            // La app comenzará en la pantalla de Home.
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            // --- TODAS LAS PANTALLAS (RUTAS) DE TU APP SE DEFINEN AQUÍ ---
-
             composable(route = Screen.Home.route) {
                 HomeScreen(navController = navController, viewModel = mainViewModel)
             }
+
             composable(route = Screen.Profile.route) {
-                ProfileScreen(navController = navController, viewModel = mainViewModel)
-            }
-            composable(route = Screen.Settings.route) {
-                SettingsScreen(navController = navController, viewModel = mainViewModel)
-            }
-            composable(route = Screen.Inicio.route) {
-                InicioScreen(
+                ProfileScreen(
                     navController = navController,
-                    viewModel = usuarioViewModel
+                    viewModel = viewModel(factory = AppViewModelProvider.Factory)
                 )
             }
 
             composable(route = Screen.Registro.route) {
                 RegistroScreen(
-                    navController = navController
-                    // <-- Ya no se pasa el viewModel. La pantalla lo obtiene sola.
+                    navController = navController,
+                    viewModel = viewModel(factory = AppViewModelProvider.Factory)
                 )
             }
+
+            composable(route = Screen.Login.route) {
+                LoginScreen(
+                    navController = navController,
+                    viewModel = viewModel(factory = AppViewModelProvider.Factory)
+                )
+            }
+
 
             composable(route = Screen.Catalogo.route) {
                 CatalogoScreen(navController = navController)
             }
-
         }
     }
 }
 
-// Preview para la pantalla de inicio, que es la que se muestra al arrancar.
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
