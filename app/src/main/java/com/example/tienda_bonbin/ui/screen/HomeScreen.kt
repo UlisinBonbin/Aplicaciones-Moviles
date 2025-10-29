@@ -55,8 +55,8 @@ fun HomeScreen(
                     IconButton(onClick = { /* TODO: Lógica de búsqueda */ }) {
                         Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color.White)
                     }
-                    IconButton(onClick = { navController.navigate(Screen.Carrito.route)}) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Carrito de Compras", tint = Color.White)
+                    IconButton(onClick = { viewModel.navigateTo(Screen.Carrito) }) {
+                        Icon(Icons.Default.ShoppingCart, contentDescription = "Carrito", tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
