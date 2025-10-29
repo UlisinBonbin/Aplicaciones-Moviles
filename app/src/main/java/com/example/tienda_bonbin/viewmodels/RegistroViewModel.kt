@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import android.util.Patterns
 
 // Estado de la UI para el formulario de registro
 data class RegistroUiState(
@@ -45,16 +46,31 @@ class RegistroViewModel(private val repository: UsuarioRepository) : ViewModel()
 
     // Función principal que se llamará al pulsar el botón de registrar
     fun registrarUsuario() {
+        val state = uiState.value // Usamos una variable local para facilitar la lectura
+
         // Validación de datos
-        if (uiState.value.nombre.isBlank() || uiState.value.correo.isBlank() || uiState.value.clave.isBlank() || uiState.value.direccion.isBlank()) {
+        if (state.nombre.isBlank() || state.correo.isBlank() || state.clave.isBlank() || state.direccion.isBlank()) {
             _uiState.update { it.copy(mensajeError = "Todos los campos son obligatorios") }
             return
         }
-        if (uiState.value.clave != uiState.value.confirmarClave) {
+
+        // --- ¡NUEVA LÓGICA DE VALIDACIÓN DE CORREO! ---
+        if (!Patterns.EMAIL_ADDRESS.matcher(state.correo).matches()) {
+            _uiState.update { it.copy(mensajeError = "El formato del correo electrónico no es válido") }
+            return
+        }
+
+        if (state.clave != state.confirmarClave) {
             _uiState.update { it.copy(mensajeError = "Las contraseñas no coinciden") }
             return
         }
-        if (!uiState.value.terminosAceptados) {
+
+        if (state.clave.length < 6) { // Es una buena práctica validar también el largo de la contraseña
+            _uiState.update { it.copy(mensajeError = "La contraseña debe tener al menos 6 caracteres") }
+            return
+        }
+
+        if (!state.terminosAceptados) {
             _uiState.update { it.copy(mensajeError = "Debes aceptar los términos y condiciones") }
             return
         }
