@@ -1,4 +1,4 @@
-package com.example.tienda_bonbin.navigation
+package com.example.tienda_bonbin.navigation/*  <-- INICIO DEL COMENTARIO DE BLOQUE
 
 sealed class AppRoute(val route: String) {
     data object Home: AppRoute("home")
@@ -7,6 +7,7 @@ sealed class AppRoute(val route: String) {
     data object Settings: AppRoute("settings")
     data object PantallaPrincipal: AppRoute("pantallaprincipal")
     data object Login: AppRoute("login")
+    object Carrito : Screen("carrito_screen")
 
     data class Detail (val itemId:String): AppRoute("detail/{itemId}")
     {
@@ -15,3 +16,7 @@ sealed class AppRoute(val route: String) {
         }
     }
 }
+
+FIN DEL COMENTARIO DE BLOQUE --> */
+
+//APPROUTE NO SE OCUPA, SE ESTA OCUPANDO SCREEN, NO SE BORRA POR SI ACASO

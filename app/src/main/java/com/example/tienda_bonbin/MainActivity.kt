@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tienda_bonbin.navigation.NavigationEvent
 import com.example.tienda_bonbin.navigation.Screen
+import com.example.tienda_bonbin.ui.screen.CarritoScreen
 import com.example.tienda_bonbin.ui.screen.CatalogoScreen
 import com.example.tienda_bonbin.ui.screen.HomeScreen
 import com.example.tienda_bonbin.ui.screen.LoginScreen
@@ -97,6 +98,11 @@ fun AppContainer() {
             composable(route = Screen.Catalogo.route) {
                 CatalogoScreen(navController = navController)
             }
+
+            composable(route = Screen.Carrito.route) {
+                CarritoScreen(navController = navController)
+            }
+
         }
     }
 }
