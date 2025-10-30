@@ -34,6 +34,14 @@ object AppViewModelProvider {
                 sessionRepository = bonbinApplication().container.sessionRepository
             )
         }
+
+        initializer {
+            CatalogoViewModel(
+                // Le proporcionamos el SessionRepository que necesita
+                sessionRepository = bonbinApplication().container.sessionRepository
+            )
+        }
+
     }
 }
 
