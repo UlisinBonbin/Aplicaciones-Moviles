@@ -46,6 +46,7 @@ object AppViewModelProvider {
         initializer {
             CarritoViewModel(
                 carritoRepository = bonbinApplication().container.carritoRepository,
+                compraRepository = bonbinApplication().container.compraRepository,
                 sessionRepository = bonbinApplication().container.sessionRepository
             )
         }

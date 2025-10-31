@@ -2,7 +2,7 @@ package com.example.tienda_bonbin.repository
 
 // Ya no necesitas la importación de 'copy', la eliminamos.
 import com.example.tienda_bonbin.data.CarritoItem
-import com.example.tienda_bonbin.data.CarritoDao // Asegúrate que el import apunte a la subcarpeta 'dao'
+import com.example.tienda_bonbin.data.CarritoDao
 import com.example.tienda_bonbin.data.CarritoItemInfo
 import kotlinx.coroutines.flow.Flow
 
@@ -47,5 +47,8 @@ class CarritoRepository(private val carritoDao: CarritoDao) {
         return carritoDao.obtenerItemsInfoDelCarrito(usuarioId)
     }
 
-    // Aquí puedes añadir más funciones en el futuro.
+    suspend fun vaciarCarrito(usuarioId: Int) {
+        carritoDao.vaciarCarrito(usuarioId)
+    }
+
 }

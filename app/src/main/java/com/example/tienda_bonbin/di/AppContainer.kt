@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.tienda_bonbin.data.AppDatabase
 import com.example.tienda_bonbin.repository.CarritoRepository
+import com.example.tienda_bonbin.repository.CompraRepository
 import com.example.tienda_bonbin.repository.ProductoRepository // La importación ya está
 import com.example.tienda_bonbin.repository.SessionRepository
 import com.example.tienda_bonbin.repository.UsuarioRepository
@@ -24,6 +25,8 @@ interface AppContainer {
     val carritoRepository: CarritoRepository
     // --- ¡AÑADE ESTA LÍNEA! ---
     val productoRepository: ProductoRepository
+
+    val compraRepository: CompraRepository
 }
 
 /**
@@ -31,6 +34,9 @@ interface AppContainer {
  */
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
+    override val compraRepository: CompraRepository by lazy {
+        CompraRepository(AppDatabase.getDatabase(context).compraDao())
+    }
     override val usuarioRepository: UsuarioRepository by lazy {
         UsuarioRepository(AppDatabase.getDatabase(context).usuarioDao())
     }

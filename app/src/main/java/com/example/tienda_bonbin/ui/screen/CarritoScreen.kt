@@ -7,10 +7,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardBackspace
+// --- 1. IMPORTACIONES AÑADIDAS ---
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
+// --- (El resto de tus importaciones)
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,13 +39,24 @@ import com.example.tienda_bonbin.viewmodels.CarritoViewModel
 @Composable
 fun CarritoScreen(
     navController: NavController,
-    // 1. Inyecta el ViewModel en la pantalla
     carritoViewModel: CarritoViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    // 2. Observa el estado de la UI desde el ViewModel
     val uiState by carritoViewModel.uiState.collectAsState()
 
+    // --- 2. LÓGICA PARA MOSTRAR MENSAJES (SNACKBAR) ---
+    val snackbarHostState = remember { SnackbarHostState() }
+    // Usamos LaunchedEffect para observar cambios en el mensaje del ViewModel
+    LaunchedEffect(uiState.mensajeUsuario) {
+        uiState.mensajeUsuario?.let { mensaje ->
+            snackbarHostState.showSnackbar(mensaje)
+            // Informamos al ViewModel que el mensaje ya se mostró
+            carritoViewModel.mensajeMostrado()
+        }
+    }
+
     Scaffold(
+        // Añadimos el SnackbarHost para que los mensajes puedan aparecer
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Mi Carrito", color = Color.White, fontWeight = FontWeight.Bold) },
@@ -56,11 +69,23 @@ fun CarritoScreen(
                         )
                     }
                 },
+                // --- 3. BOTÓN DE VACIAR CARRITO AÑADIDO ---
+                actions = {
+                    // Solo mostramos el botón si hay items en el carrito
+                    if (uiState.items.isNotEmpty()) {
+                        IconButton(onClick = { carritoViewModel.vaciarCarrito() }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Vaciar carrito",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = ChocolateBrown)
             )
         },
         bottomBar = {
-            // 3. Usa los datos del uiState
             if (uiState.items.isNotEmpty()) {
                 BottomAppBar(containerColor = Color.White, tonalElevation = 8.dp) {
                     Row(
@@ -70,7 +95,6 @@ fun CarritoScreen(
                     ) {
                         Column {
                             Text("Total:", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
-                            // 4. Muestra el total real calculado por el ViewModel
                             Text(
                                 text = "$${"%,.0f".format(uiState.total).replace(',', '.')}",
                                 style = MaterialTheme.typography.titleLarge,
@@ -79,17 +103,19 @@ fun CarritoScreen(
                             )
                         }
                         Button(
-                            onClick = { /* TODO: Lógica para proceder al pago */ },
+                            // --- 4. ACCIÓN DEL BOTÓN DE PAGO CONECTADA ---
+                            onClick = { carritoViewModel.finalizarCompra() },
                             colors = ButtonDefaults.buttonColors(containerColor = SoftPink)
                         ) {
-                            Text("Proceder al Pago", color = Color.White)
+                            // Cambiamos el texto para que sea más claro
+                            Text("Finalizar Compra", color = Color.White)
                         }
                     }
                 }
             }
         }
     ) { innerPadding ->
-        // 5. La UI reacciona si la lista está vacía o no
+        // El resto del código de la UI no necesita cambios, ya que es reactivo al estado.
         if (uiState.items.isEmpty()) {
             Box(
                 modifier = Modifier.padding(innerPadding).fillMaxSize().background(CreamBackground),
@@ -106,23 +132,23 @@ fun CarritoScreen(
                 }
             }
         } else {
-            // 6. Muestra la lista de items del carrito
             LazyColumn(
                 modifier = Modifier.padding(innerPadding).fillMaxSize().background(CreamBackground),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(uiState.items, key = { it.productoId }) { item ->
-                    CarritoItem(item = item)
+                    // 5. Usamos el nuevo nombre del Composable
+                    CarritoItemRow(item = item)
                 }
             }
         }
     }
 }
 
-// 7. CarritoItem ahora recibe un objeto CarritoItemInfo
+// Renombramos el Composable para mayor claridad y evitar posibles conflictos
 @Composable
-private fun CarritoItem(item: CarritoItemInfo) {
+private fun CarritoItemRow(item: CarritoItemInfo) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(2.dp),
@@ -145,10 +171,8 @@ private fun CarritoItem(item: CarritoItemInfo) {
             Box(
                 modifier = Modifier.background(CreamBackground, shape = MaterialTheme.shapes.small).padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
-                // 8. Muestra la cantidad real
                 Text("Cant: ${item.cantidad}", fontWeight = FontWeight.Bold, color = DarkTextColor, fontSize = 14.sp)
             }
         }
     }
 }
-

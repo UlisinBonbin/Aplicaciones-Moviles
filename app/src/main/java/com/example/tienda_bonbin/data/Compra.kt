@@ -20,5 +20,6 @@ data class Compra(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val usuarioId: Int,
-    val fechaCompra: String
+    val fechaCompra: String,
+    val total: Double
 )
