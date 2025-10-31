@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
         DetalleCompra::class,
         CarritoItem::class
     ],
-    version = 3, // Puedes mantener la versión o subirla a 3
+    version = 5, // Se sube cuando se cambia la base de datos
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
