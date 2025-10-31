@@ -174,20 +174,20 @@ fun FeaturedProductsSection(navController: NavController) {
         Producto(
             id = 1, // ID de ejemplo
             imagenUrl = "https://images.aws.nestle.recipes/original/2024_10_23T06_40_18_badun_images.badun.es_tarta_fria_de_chocolate_blanco_con_frutas.jpg",
-            nombre = "Torta de Chocolate Blanco",
-            precio = 18500.0 // Ahora es un número (Double)
+            nombre = "Torta Cuadrada de Frutas",
+            precio = 50000.0
         ),
         Producto(
             id = 2,
             imagenUrl = "https://tortamaniaecuador.com/wp-content/uploads/2022/12/Vainilla-con-crema-pequena-300x300.png",
-            nombre = "Pastel de Vainilla y Crema",
-            precio = 12000.0
+            nombre = "Torta Circular de Vainilla",
+            precio = 40000.0
         ),
         Producto(
             id = 3,
             imagenUrl = "https://rhenania.cl/wp-content/uploads/2020/12/CIRUELA-MANJAR-BLANCO.jpg",
-            nombre = "Torta de Ciruela y Manjar",
-            precio = 16990.0
+            nombre = "Torta Circular de Manjar",
+            precio = 42000.0
         )
     )
 
