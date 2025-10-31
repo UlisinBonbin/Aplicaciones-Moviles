@@ -8,6 +8,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.Cookie
+import androidx.compose.material.icons.filled.Icecream
+import androidx.compose.material.icons.filled.LocalCafe
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -15,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -24,8 +29,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.tienda_bonbin.navigation.Screen
 import com.example.tienda_bonbin.data.Producto
+import com.example.tienda_bonbin.navigation.Screen
 import com.example.tienda_bonbin.ui.theme.ChocolateBrown
 import com.example.tienda_bonbin.ui.theme.CreamBackground
 import com.example.tienda_bonbin.ui.theme.DarkTextColor
@@ -76,7 +81,8 @@ fun HomeScreen(
         ) {
             HorizontalNavBar(viewModel = viewModel)
             WelcomeBanner()
-            FeaturedProductsSection(navController = navController)
+            CategoriesSection(viewModel = viewModel)
+            FeaturedProductsSection(viewModel = viewModel)
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
@@ -168,7 +174,75 @@ fun WelcomeBanner() {
 }
 
 @Composable
-fun FeaturedProductsSection(navController: NavController) {
+fun CategoriesSection(viewModel: MainViewModel) {
+    val categories = listOf(
+        "Tortas" to Icons.Filled.Cake,
+        "Postres" to Icons.Filled.Icecream,
+        "Repostería" to Icons.Filled.Cookie
+    )
+
+    Column(modifier = Modifier.padding(vertical = 16.dp)) {
+        Text(
+            text = "Explora por Categoría",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = DarkTextColor,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(categories) { (name, icon) ->
+                CategoryCard(
+                    icon = icon,
+                    text = name,
+                    // For now, all categories navigate to the general catalog
+                    onClick = { viewModel.navigateTo(Screen.Catalogo) }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoryCard(icon: ImageVector, text: String, onClick: () -> Unit) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.width(100.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 16.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                tint = SoftPink,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = DarkTextColor,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+
+@Composable
+fun FeaturedProductsSection(viewModel: MainViewModel) {
     // --- ↓↓↓ AJUSTA ESTA LISTA ↓↓↓ ---
     val productos = listOf(
         Producto(
@@ -205,7 +279,7 @@ fun FeaturedProductsSection(navController: NavController) {
                 fontWeight = FontWeight.Bold,
                 color = DarkTextColor // <-- CAMBIO DE COLOR
             )
-            TextButton(onClick = { /* Navegar a la pantalla de catálogo */ }) {
+            TextButton(onClick = { viewModel.navigateTo(Screen.Catalogo) }) {
                 Text("Ver todo", color = SoftPink) // <-- CAMBIO DE COLOR
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(18.dp), tint = SoftPink)
             }

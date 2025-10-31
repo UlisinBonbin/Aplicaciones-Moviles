@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-// --- 1. IMPORTACIONES AÑADIDAS ---
 import androidx.compose.material.icons.automirrored.filled.KeyboardBackspace
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-// --- 2. IMPORTACIÓN AÑADIDA ---
 import com.example.tienda_bonbin.navigation.Screen
 import com.example.tienda_bonbin.ui.theme.ChocolateBrown
 import com.example.tienda_bonbin.ui.theme.CreamBackground
@@ -43,12 +42,9 @@ fun ProfileScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // Si el estado indica que la sesión se cerró, navegamos a la pantalla de inicio
     LaunchedEffect(uiState.sesionCerrada) {
         if (uiState.sesionCerrada) {
-            // --- 3. NAVEGACIÓN CORREGIDA ---
             navController.navigate(Screen.Home.route) {
-                // Limpiamos la pila de navegación para que no pueda volver al perfil
                 popUpTo(navController.graph.startDestinationId) {
                     inclusive = true
                 }
@@ -60,6 +56,15 @@ fun ProfileScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Mi Perfil", color = Color.White, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardBackspace,
+                            contentDescription = "Volver",
+                            tint = Color.White
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = ChocolateBrown)
             )
         }
@@ -77,43 +82,84 @@ fun ProfileScreen(
             } else if (uiState.usuario != null) {
                 val usuario = uiState.usuario!!
 
-                // Avatar de perfil
-                Box(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                        .background(SoftPink),
-                    contentAlignment = Alignment.Center
+                // --- SECCIÓN DE PERFIL MEJORADA ---
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .background(SoftPink),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = usuario.nombre.firstOrNull()?.uppercase() ?: "?",
+                            fontSize = 60.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        // Usamos firstOrNull para evitar crashes si el nombre está vacío
-                        text = usuario.nombre.firstOrNull()?.uppercase() ?: "?",
-                        fontSize = 60.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+                        text = usuario.nombre,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = DarkTextColor
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = usuario.correo,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Gray
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-                // Información del usuario
+                // Información detallada con opción de editar (visual)
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(4.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        InfoRow(icon = Icons.Default.Person, label = "Nombre", value = usuario.nombre)
+                        Text(
+                            text = "Información de la Cuenta",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = DarkTextColor,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Divider()
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        InfoRow(
+                            icon = Icons.Default.Person,
+                            label = "Nombre Completo",
+                            value = usuario.nombre,
+                            onEditClick = { /* No-op */ }
+                        )
                         Divider(modifier = Modifier.padding(vertical = 8.dp))
-                        InfoRow(icon = Icons.Default.Email, label = "Correo", value = usuario.correo)
+                        InfoRow(
+                            icon = Icons.Default.Email,
+                            label = "Correo Electrónico",
+                            value = usuario.correo,
+                            onEditClick = { /* No-op */ }
+                        )
                         Divider(modifier = Modifier.padding(vertical = 8.dp))
-                        InfoRow(icon = Icons.Default.Home, label = "Dirección", value = usuario.direccion)
+                        InfoRow(
+                            icon = Icons.Default.Home,
+                            label = "Dirección de Envío",
+                            value = usuario.direccion,
+                            onEditClick = { /* No-op */ }
+                        )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Botón de Cerrar Sesión
                 Button(
                     onClick = { viewModel.cerrarSesion() },
                     colors = ButtonDefaults.buttonColors(containerColor = ChocolateBrown),
@@ -124,13 +170,11 @@ fun ProfileScreen(
                     Text("Cerrar Sesión", color = Color.White)
                 }
 
-                // --- 4. BOTÓN AÑADIDO ---
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedButton(
                     onClick = {
                         navController.navigate(Screen.Home.route) {
-                            // Limpia la pila hasta Home para evitar volver al perfil con el botón "atrás"
                             popUpTo(Screen.Home.route) { inclusive = true }
                         }
                     },
@@ -149,7 +193,6 @@ fun ProfileScreen(
                 }
 
             } else {
-                // Mensaje en caso de que no se cargue el usuario
                 Text(
                     "No se pudo cargar la información del usuario.",
                     modifier = Modifier.padding(top = 32.dp)
@@ -160,13 +203,33 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun InfoRow(icon: ImageVector, label: String, value: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun InfoRow(
+    icon: ImageVector,
+    label: String,
+    value: String,
+    onEditClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Icon(imageVector = icon, contentDescription = label, tint = SoftPink)
         Spacer(modifier = Modifier.width(16.dp))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-            Text(text = value, style = MaterialTheme.typography.bodyLarge, color = DarkTextColor, fontWeight = FontWeight.Medium)
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyLarge,
+                color = DarkTextColor,
+                fontWeight = FontWeight.Medium
+            )
+        }
+        IconButton(onClick = onEditClick) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Editar $label",
+                tint = Color.LightGray
+            )
         }
     }
 }
