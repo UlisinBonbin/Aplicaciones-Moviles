@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
     entities = [
         Usuario::class,
         Producto::class,
-         Compra::class, // Comenta las entidades que aún no usas para evitar errores
+        Compra::class,
         DetalleCompra::class,
         CarritoItem::class
     ],
-    version = 5, // Se sube cuando se cambia la base de datos
+    version = 5, // Se sube cuando se cambia algo en la base de datos
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -51,15 +51,13 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 
-    // --- 2. CLASE DE CALLBACK DEFINIDA DENTRO DE AppDatabase ---
-    // Esto es más limpio y mantiene toda la lógica de la BD junta.
     private class AppDatabaseCallback(
         private val context: Context
     ) : RoomDatabase.Callback() {
 
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
-            // Cuando la base de datos se crea por primera vez, poblamos los productos.
+            // Cuando la base de datos se crea por primera vez, se poblan los productos.
             INSTANCE?.let { database ->
                 CoroutineScope(Dispatchers.IO).launch {
                     val productoDao = database.productoDao()
@@ -68,8 +66,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        // --- 3. LA LISTA DE PRODUCTOS, AHORA EN SU SITIO ---
-        // Esta función ahora pertenece al Callback que la va a usar.
         private fun getInitialProducts(): List<Producto> {
             return listOf(
                 Producto(id = 1, nombre = "Torta Cuadrada de Chocolate", precio = 45000.0, imagenUrl = "https://tortasdelacasa.com/wp-content/uploads/2024/02/DSC4340-scaled.jpg"),

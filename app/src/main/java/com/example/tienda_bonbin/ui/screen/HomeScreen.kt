@@ -37,7 +37,6 @@ import com.example.tienda_bonbin.ui.theme.DarkTextColor
 import com.example.tienda_bonbin.ui.theme.SoftPink
 import com.example.tienda_bonbin.viewmodels.MainViewModel
 
-// El comentario de la paleta de colores se ha eliminado porque ahora está en ui/theme/Color.kt
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,8 +101,7 @@ fun HorizontalNavBar(viewModel: MainViewModel) {
         item { NavBarItem(text = "Catálogo", onClick = { viewModel.navigateTo(Screen.Catalogo) }) }
         item { NavBarItem(text = "Mi Perfil", onClick = { viewModel.navigateTo(Screen.Profile) }) }
 
-        // --- ¡LÍNEA CORREGIDA! ---
-        // Ahora navega a la ruta correcta "login_screen" que está definida en tu MainActivity
+
         item { NavBarItem(text = "Iniciar Sesión", onClick = { viewModel.navigateTo(Screen.Login) }) }
 
         item { NavBarItem(text = "Registro", onClick = { viewModel.navigateTo(Screen.Registro) }) }
@@ -115,7 +113,7 @@ fun NavBarItem(text: String, onClick: () -> Unit, isSelected: Boolean = false) {
     TextButton(onClick = onClick) {
         Text(
             text = text,
-            color = if (isSelected) SoftPink else DarkTextColor, // <-- CAMBIO DE COLOR
+            color = if (isSelected) SoftPink else DarkTextColor,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
         )
     }
@@ -198,7 +196,6 @@ fun CategoriesSection(viewModel: MainViewModel) {
                 CategoryCard(
                     icon = icon,
                     text = name,
-                    // For now, all categories navigate to the general catalog
                     onClick = { viewModel.navigateTo(Screen.Catalogo) }
                 )
             }
@@ -277,7 +274,7 @@ fun FeaturedProductsSection(viewModel: MainViewModel) {
                 text = "Nuestras Creaciones",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = DarkTextColor // <-- CAMBIO DE COLOR
+                color = DarkTextColor
             )
             TextButton(onClick = { viewModel.navigateTo(Screen.Catalogo) }) {
                 Text("Ver todo", color = SoftPink) // <-- CAMBIO DE COLOR
@@ -291,8 +288,8 @@ fun FeaturedProductsSection(viewModel: MainViewModel) {
         ) {
             items(productos) { producto ->
                 ProductCard(
-                    imageUrl = producto.imagenUrl, // Usar el campo correcto: `imagenUrl`
-                    title = producto.nombre,       // Usar el campo correcto: `nombre`
+                    imageUrl = producto.imagenUrl,
+                    title = producto.nombre,
                     // Formatear el precio de Double a String
                     price = "$${"%,.0f".format(producto.precio).replace(',', '.')}"
                 )

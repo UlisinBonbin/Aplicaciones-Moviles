@@ -82,7 +82,6 @@ fun ProfileScreen(
             } else if (uiState.usuario != null) {
                 val usuario = uiState.usuario!!
 
-                // --- SECCIÓN DE PERFIL MEJORADA ---
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()

@@ -28,13 +28,12 @@ class CarritoRepository(private val carritoDao: CarritoDao) {
         val itemExistente = carritoDao.obtenerItem(usuarioId, productoId)
 
         if (itemExistente != null) {
-            // --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
-            // 2. Si ya existe, simplemente incrementamos la cantidad del objeto existente...
+            // 2. Si ya existe, se incrementa la cantidad del objeto existente...
             itemExistente.cantidad++
             // ...y llamamos a la función `actualizar` del DAO.
             carritoDao.actualizar(itemExistente)
         } else {
-            // 3. Si no existe, creamos uno nuevo y lo insertamos. Esta parte ya estaba bien.
+            // 3. Si no existe, creamos uno nuevo y lo insertamos.
             val nuevoItem = CarritoItem(usuarioId = usuarioId, productoId = productoId, cantidad = 1)
             carritoDao.insertar(nuevoItem)
         }

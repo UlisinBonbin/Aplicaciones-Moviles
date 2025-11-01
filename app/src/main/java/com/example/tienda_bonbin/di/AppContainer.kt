@@ -49,7 +49,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         CarritoRepository(AppDatabase.getDatabase(context).carritoDao())
     }
 
-    // Ahora esta línea es correcta porque está implementando algo de la interfaz
     override val productoRepository: ProductoRepository by lazy {
         ProductoRepository(AppDatabase.getDatabase(context).productoDao())
     }

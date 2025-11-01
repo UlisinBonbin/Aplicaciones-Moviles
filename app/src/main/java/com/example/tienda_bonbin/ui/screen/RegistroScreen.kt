@@ -24,14 +24,11 @@ import com.example.tienda_bonbin.viewmodels.RegistroViewModel // <-- CAMBIO 1: I
 @Composable
 fun RegistroScreen(
     navController: NavController,
-    // <-- CAMBIO 2: El ViewModel se inyecta con la Factory. No se pasa como parámetro desde la navegación.
     viewModel: RegistroViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ){
-    // <-- CAMBIO 3: Nos conectamos al 'uiState' del nuevo ViewModel.
     val uiState by viewModel.uiState.collectAsState()
 
     // --- MANEJO DE EFECTOS (Navegación y Errores) ---
-    // Este código es nuevo, pero fundamental para la navegación y mostrar errores.
 
     // 1. Navega a la pantalla de Login/Home cuando el registro es exitoso.
     LaunchedEffect(uiState.registroExitoso) {
@@ -62,7 +59,7 @@ fun RegistroScreen(
             modifier = Modifier
                 .padding(paddingValues) // <-- Padding del Scaffold
                 .fillMaxSize()
-                .padding(horizontal = 32.dp) // Padding horizontal que ya tenías
+                .padding(horizontal = 32.dp) // Padding horizontal
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -82,7 +79,7 @@ fun RegistroScreen(
                 errorBorderColor = MaterialTheme.colorScheme.error // Color para el borde cuando hay error
             )
 
-            // --- CAMPOS DEL FORMULARIO (CONECTADOS AL NUEVO VIEWMODEL) ---
+            // --- CAMPOS DEL FORMULARIO (CONECTADOS AL VIEWMODEL) ---
 
             OutlinedTextField(
                 // <-- CAMBIO 4: Conectar cada campo al 'uiState' y a 'onRegistroValueChange'
@@ -118,7 +115,7 @@ fun RegistroScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            // He añadido el campo de confirmar clave que definimos en el ViewModel
+            // Campo de confirmación de contraseña
             OutlinedTextField(
                 value = uiState.confirmarClave,
                 onValueChange = { viewModel.onRegistroValueChange(confirmarClave = it) },

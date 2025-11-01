@@ -16,19 +16,15 @@ import com.example.tienda_bonbin.viewmodels.MainViewModel
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    // Creamos una instancia del MainViewModel que gestionará la navegación
+    // Se crea una instancia del MainViewModel que gestionará la navegación
     val mainViewModel: MainViewModel = viewModel()
 
-    // --- LÍNEA ELIMINADA ---
-    // mainViewModel.navController = navController // Ya no es necesaria
 
-    // NavHost es el componente que gestiona las "pantallas" de tu app
+    // NavHost es el componente que gestiona las "pantallas" de la app
     NavHost(
         navController = navController,
-        // La pantalla inicial será HomeScreen
         startDestination = Screen.Home.route
     ) {
-        // ... (el resto del código permanece exactamente igual)
 
         composable(Screen.Home.route) {
             HomeScreen(
@@ -36,6 +32,6 @@ fun AppNavigation() {
                 viewModel = mainViewModel
             )
         }
-        // ... etc
+
     }
 }

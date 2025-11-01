@@ -23,7 +23,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-// --- 1. AÑADIR NUEVAS IMPORTACIONES ---
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -34,13 +33,9 @@ import com.example.tienda_bonbin.ui.theme.CreamBackground
 import com.example.tienda_bonbin.ui.theme.DarkTextColor
 import com.example.tienda_bonbin.ui.theme.SoftPink
 import com.example.tienda_bonbin.viewmodels.AppViewModelProvider
-// --- 2. IMPORTAR EL VIEWMODEL ---
 import com.example.tienda_bonbin.viewmodels.CatalogoViewModel
 import kotlinx.coroutines.launch
 
-// --- 3. ELIMINAR LA LISTA FIJA ---
-// Ya no necesitamos 'catalogoDeProductos' aquí. El ViewModel nos la dará.
-// private val catalogoDeProductos = listOf(...)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

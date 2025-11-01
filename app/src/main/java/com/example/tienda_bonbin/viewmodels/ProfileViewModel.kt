@@ -28,7 +28,7 @@ class ProfileViewModel(
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-        // --- 3. NUEVA LÓGICA DE INICIALIZACIÓN ---
+        // ---LÓGICA DE INICIALIZACIÓN ---
         // Se suscribe a los cambios del ID de usuario guardado en la sesión.
         viewModelScope.launch {
             // `userIdFlow` es un Flow. `collect` se ejecutará cada vez que el ID cambie
@@ -49,7 +49,7 @@ class ProfileViewModel(
         }
     }
 
-    // --- 4. NUEVA LÓGICA PARA CERRAR SESIÓN ---
+    // --- 4. LÓGICA CERRAR SESIÓN ---
     fun cerrarSesion() {
         viewModelScope.launch {
             // Le pedimos al SessionRepository que borre el ID guardado.

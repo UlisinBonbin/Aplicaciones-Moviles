@@ -5,9 +5,6 @@ import androidx.room.ForeignKey
 
 @Entity(
     tableName = "carrito_items",
-    // La clave primaria será una combinación del usuario y el producto.
-    // Esto asegura que un usuario solo puede tener una fila para cada producto único en su carrito.
-    // Si quiere más, se actualizará la 'cantidad'.
     primaryKeys = ["usuarioId", "productoId"],
     foreignKeys = [
         ForeignKey(
@@ -26,7 +23,7 @@ import androidx.room.ForeignKey
 )
 
 data class CarritoItem(
-    val usuarioId: Int, // ¿A qué usuario pertenece este item?
-    val productoId: Int, // ¿Qué producto es?
-    var cantidad: Int    // ¿Cuántas unidades de ese producto?
+    val usuarioId: Int,
+    val productoId: Int,
+    var cantidad: Int
 )

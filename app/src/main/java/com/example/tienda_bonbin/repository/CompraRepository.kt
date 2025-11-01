@@ -24,7 +24,7 @@ class CompraRepository(private val compraDao: CompraDao) {
         // 1. Calcular el total de la compra
         val totalCompra = items.sumOf { it.precio * it.cantidad }
 
-        // --- 2. ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+
         // Creamos un formateador de fecha para convertir la fecha actual a un String.
         // Puedes cambiar el formato "yyyy-MM-dd HH:mm:ss" al que prefieras.
         val formatoFecha = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())

@@ -54,7 +54,7 @@ class RegistroViewModel(private val repository: UsuarioRepository) : ViewModel()
             return
         }
 
-        // --- ¡NUEVA LÓGICA DE VALIDACIÓN DE CORREO! ---
+        // ---LÓGICA DE VALIDACIÓN DE CORREO ---
         if (!Patterns.EMAIL_ADDRESS.matcher(state.correo).matches()) {
             _uiState.update { it.copy(mensajeError = "El formato del correo electrónico no es válido") }
             return

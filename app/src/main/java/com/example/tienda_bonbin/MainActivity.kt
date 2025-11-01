@@ -47,8 +47,6 @@ fun AppContainer() {
     val navController = rememberNavController()
     val mainViewModel: MainViewModel = viewModel()
 
-    // Si tu MainViewModel controla la navegación a través de eventos,
-    // este LaunchedEffect es correcto.
     LaunchedEffect(key1 = Unit) {
         mainViewModel.navigationEvents.collectLatest { event ->
             when (event) {

@@ -5,8 +5,8 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "compras", // El nombre que tendrá la tabla en la base de datos
-    // 3. DEFINE LA RELACIÓN CON LA TABLA DE USUARIOS
+    tableName = "compras",
+
     foreignKeys = [
         ForeignKey(
             entity = Usuario::class, // Se relaciona con la clase Usuario

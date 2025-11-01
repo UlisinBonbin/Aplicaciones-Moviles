@@ -9,9 +9,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CarritoDao {
-    // Inserta un item en el carrito.
-    // Si el item ya existe (mismo usuarioId y productoId), lo reemplaza.
-    // Usaremos una lógica más avanzada en el repositorio para sumar cantidades.
 
     @Update
     suspend fun actualizar(item: CarritoItem)
@@ -19,8 +16,7 @@ interface CarritoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertar(item: CarritoItem)
 
-    // Obtiene un item específico del carrito para un usuario.
-    // Será útil para saber si debemos insertar uno nuevo o actualizar la cantidad.
+
     @Query("SELECT * FROM carrito_items WHERE usuarioId = :usuarioId AND productoId = :productoId")
     suspend fun obtenerItem(usuarioId: Int, productoId: Int): CarritoItem?
 
@@ -41,5 +37,3 @@ interface CarritoDao {
     fun obtenerItemsInfoDelCarrito(usuarioId: Int): Flow<List<CarritoItemInfo>>
 }
 
-    // @Query("DELETE FROM carrito_items WHERE usuarioId = :usuarioId AND productoId = :productoId")
-  // suspend fun eliminarItem(usuarioId: Int, productoId: Int)

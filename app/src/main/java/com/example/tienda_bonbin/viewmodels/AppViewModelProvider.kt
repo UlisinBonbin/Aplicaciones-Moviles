@@ -33,7 +33,6 @@ object AppViewModelProvider {
         }
 
         // --- INICIALIZADOR ÚNICO Y CORRECTO PARA CatalogoViewModel ---
-        // Se borró el bloque duplicado que solo tenía dos repositorios.
         initializer {
             CatalogoViewModel(
                 sessionRepository = bonbinApplication().container.sessionRepository,
@@ -42,7 +41,7 @@ object AppViewModelProvider {
             )
         }
 
-        // Inicializador para CarritoViewModel (este ya estaba bien)
+        // Inicializador para CarritoViewModel
         initializer {
             CarritoViewModel(
                 carritoRepository = bonbinApplication().container.carritoRepository,

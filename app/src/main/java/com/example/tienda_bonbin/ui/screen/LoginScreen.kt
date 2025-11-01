@@ -129,7 +129,6 @@ fun LoginScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            // --- 2. BOTÓN MODIFICADO ---
             OutlinedButton(
                 onClick = {
                     // Navega a la pantalla Home y limpia la pila para que sea el nuevo inicio
@@ -140,7 +139,6 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 border = ButtonDefaults.outlinedButtonBorder.copy(brush = SolidColor(ChocolateBrown.copy(alpha = 0.6f)))
             ) {
-                // Se ha eliminado el Icono y el Spacer de aquí
                 Text("Volver a Inicio", color = ChocolateBrown)
             }
         }

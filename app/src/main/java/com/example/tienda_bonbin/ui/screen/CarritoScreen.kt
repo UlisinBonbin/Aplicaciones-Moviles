@@ -7,11 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardBackspace
-// --- 1. IMPORTACIONES AÑADIDAS ---
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import kotlinx.coroutines.launch
-// --- (El resto de tus importaciones)
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -107,7 +105,6 @@ fun CarritoScreen(
                             onClick = { carritoViewModel.finalizarCompra() },
                             colors = ButtonDefaults.buttonColors(containerColor = SoftPink)
                         ) {
-                            // Cambiamos el texto para que sea más claro
                             Text("Finalizar Compra", color = Color.White)
                         }
                     }
@@ -115,7 +112,6 @@ fun CarritoScreen(
             }
         }
     ) { innerPadding ->
-        // El resto del código de la UI no necesita cambios, ya que es reactivo al estado.
         if (uiState.items.isEmpty()) {
             Box(
                 modifier = Modifier.padding(innerPadding).fillMaxSize().background(CreamBackground),

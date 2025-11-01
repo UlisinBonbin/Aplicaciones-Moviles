@@ -1,6 +1,5 @@
 package com.example.tienda_bonbin.navigation
 
-import android.health.connect.datatypes.ExerciseRoute
 
 sealed class NavigationEvent {
     data class NavigateTo(

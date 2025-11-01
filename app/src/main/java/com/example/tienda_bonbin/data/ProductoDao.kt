@@ -12,7 +12,6 @@ interface ProductoDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertarTodos(productos: List<Producto>)
 
-    // Obtiene todos los productos de la tabla.
     @Query("SELECT * FROM productos")
     fun obtenerTodos(): Flow<List<Producto>>
 }

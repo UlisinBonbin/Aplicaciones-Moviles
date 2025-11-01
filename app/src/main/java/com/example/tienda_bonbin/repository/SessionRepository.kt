@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.map
 /**
  * Repositorio para gestionar los datos de la sesión del usuario (p. ej., el ID del usuario logueado).
  * Utiliza DataStore para persistir estos datos.
- *
- * --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
  * @param dataStore La instancia de DataStore que se usará para guardar las preferencias.
  */
 class SessionRepository(private val dataStore: DataStore<Preferences>) { // <-- Acepta DataStore, no Context
