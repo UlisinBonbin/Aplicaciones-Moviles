@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 // 1. Asegúrate de que el import de Usuario apunte a la clase del paquete 'model'
 import com.example.tienda_bonbin.data.model.Usuario
 import com.example.tienda_bonbin.data.NetworkModule
+import com.example.tienda_bonbin.repository.UsuarioRepository
 // Quita la dependencia del Repositorio por ahora, llamaremos a la red directamente
 // import com.example.tienda_bonbin.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,7 @@ data class RegistroUiState(
 )
 
 // 3. Quitamos el repositorio del constructor por ahora para simplificar
-class RegistroViewModel() : ViewModel() {
+class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistroUiState())
     val uiState: StateFlow<RegistroUiState> = _uiState.asStateFlow()
@@ -94,6 +95,16 @@ class RegistroViewModel() : ViewModel() {
                     // ÉXITO: El servidor respondió con un código 2xx
                     val usuarioRegistrado = response.body()!!
                     println("¡Usuario registrado con éxito en el servidor!: $usuarioRegistrado")
+
+                    val usuarioParaDb = com.example.tienda_bonbin.data.Usuario(
+                        id = usuarioRegistrado.id!!.toInt(),
+                        nombre = usuarioRegistrado.nombre,
+                        correo = usuarioRegistrado.correo,
+                        clave = usuarioRegistrado.contrasena,
+                        direccion = usuarioRegistrado.direccion
+                    )
+
+                    usuarioRepository.insertarUsuario(usuarioParaDb)
                     _uiState.update { it.copy(isLoading = false, registroExitoso = true) }
 
                     // Opcional: Aquí podrías guardar el usuario en tu base de datos local (Room)

@@ -12,7 +12,7 @@ object AppViewModelProvider {
         // Inicializador para RegistroViewModel
         initializer {
             RegistroViewModel(
-
+                usuarioRepository = bonbinApplication().container.usuarioRepository
             )
         }
 
