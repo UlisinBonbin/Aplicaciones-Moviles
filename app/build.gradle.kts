@@ -64,6 +64,17 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.compose.compiler:compiler:1.5.3")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    //Para retrofit
+    // Retrofit: La librería principal para las llamadas a la red
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Gson Converter: Para convertir automáticamente los objetos JSON a/desde clases de Kotlin
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // OkHttp Logging Interceptor (Muy útil para depurar): Te permite ver las llamadas de red en el Logcat
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")

@@ -71,8 +71,10 @@ class LoginViewModel(
             } else {
                 // 3. ¡Login correcto!
                 // Guarda el ID del usuario en DataStore para mantener la sesión
-                sessionRepository.saveUserId(usuario.id)
-                // Actualiza el estado para que la UI pueda navegar a la siguiente pantalla
+                usuario.id?.let { idNoNulo ->
+                    sessionRepository.saveUserId(idNoNulo)
+                }
+// Actualiza el estado para que la UI pueda navegar a la siguiente pantalla
                 _uiState.update { it.copy(loginExitoso = true, isLoading = false) }
             }
         }
