@@ -17,10 +17,10 @@ interface ApiService {
     @POST("api/v1/usuarios")
     suspend fun registrarUsuario(@Body usuario: Usuario): Response<Usuario>
 
-    // Aquí añadirías más endpoints en el futuro:
-    // @POST("api/v1/usuarios/login")
-    // suspend fun login(@Body credenciales: LoginRequest): Response<Usuario>
-    //
-    // @GET("api/v1/productos")
-    // suspend fun obtenerProductos(): Response<List<Producto>>
+    data class LoginRequest(val correo: String, val contrasena: String)
+
+    // En ApiService.kt
+    @POST("api/v1/usuarios/login")
+    suspend fun login(@Body loginRequest: LoginRequest): Response<Usuario> // Devuelve el Usuario si el login es correcto
+
 }

@@ -8,6 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.example.tienda_bonbin.data.NetworkModule
+import com.example.tienda_bonbin.data.ApiService.LoginRequest
+
+// Importa la entidad de la base de datos 'Usuario' y le pone un alias 'UsuarioDb'
+// para no confundirla con el 'Usuario' del modelo de red.
+import com.example.tienda_bonbin.data.Usuario as UsuarioDb
 
 // Define la estructura de los datos que la pantalla de Login necesita
 data class LoginUiState(
@@ -48,34 +54,61 @@ class LoginViewModel(
      * Orquesta el proceso de inicio de sesión cuando el usuario pulsa el botón.
      */
     fun iniciarSesion() {
-        // Validación básica para no hacer llamadas innecesarias
+        // Validación básica, se queda igual
         if (uiState.value.correo.isBlank() || uiState.value.clave.isBlank()) {
             _uiState.update { it.copy(mensajeError = "Correo y contraseña son obligatorios") }
             return
         }
 
-        // Usamos viewModelScope para que la corrutina se cancele si el ViewModel se destruye
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) } // Activa el indicador de carga
 
-            // 1. Busca al usuario en la base de datos a través del repositorio
-            val usuario = usuarioRepository.obtenerUsuarioPorCorreo(uiState.value.correo.trim())
+            try {
+                // 1. Crea el objeto para la petición de red
+                val loginRequest = LoginRequest(
+                    correo = uiState.value.correo.trim(),
+                    contrasena = uiState.value.clave
+                )
 
-            // 2. Comprueba el resultado
-            if (usuario == null) {
-                // Si no hay usuario con ese correo
-                _uiState.update { it.copy(mensajeError = "El usuario no existe", isLoading = false) }
-            } else if (usuario.clave != uiState.value.clave) {
-                // Si la contraseña no coincide (en una app real, usarías encriptación)
-                _uiState.update { it.copy(mensajeError = "Contraseña incorrecta", isLoading = false) }
-            } else {
-                // 3. ¡Login correcto!
-                // Guarda el ID del usuario en DataStore para mantener la sesión
-                usuario.id?.let { idNoNulo ->
-                    sessionRepository.saveUserId(idNoNulo)
+                // 2. Llama al servidor a través de Retrofit (NetworkModule)
+                val response = NetworkModule.apiService.login(loginRequest)
+
+                // 3. Comprueba la respuesta del servidor
+                if (response.isSuccessful && response.body() != null) {
+                    // ¡LOGIN ONLINE CORRECTO! El servidor respondió con 200 OK y un usuario
+                    val usuarioDeRed = response.body()!!
+
+                    // 4. Guarda el ID del usuario en DataStore para mantener la sesión
+                    usuarioDeRed.id?.let { idNoNulo ->
+                        sessionRepository.saveUserId(idNoNulo.toInt())
+                    }
+
+                    // 5. MAPEA y guarda el usuario en la BASE DE DATOS LOCAL (Room)
+                    //    Así otras pantallas pueden leer los datos del usuario rápidamente.
+                    val usuarioParaDb = UsuarioDb(
+                        id = usuarioDeRed.id!!.toInt(),
+                        nombre = usuarioDeRed.nombre,
+                        correo = usuarioDeRed.correo,
+                        clave = usuarioDeRed.contrasena,
+                        direccion = usuarioDeRed.direccion
+                    )
+                    usuarioRepository.insertarUsuario(usuarioParaDb)
+
+                    // 6. Actualiza la UI para que pueda navegar a la siguiente pantalla
+                    _uiState.update { it.copy(loginExitoso = true, isLoading = false) }
+
+                } else {
+                    // ERROR DEL SERVIDOR (ej. 401 Unauthorized - contraseña incorrecta)
+                    // El servidor respondió, pero con un código de error.
+                    _uiState.update { it.copy(mensajeError = "Correo o contraseña incorrectos", isLoading = false) }
                 }
-// Actualiza el estado para que la UI pueda navegar a la siguiente pantalla
-                _uiState.update { it.copy(loginExitoso = true, isLoading = false) }
+
+            } catch (e: Exception) {
+                // ERROR DE RED (No hay internet, IP incorrecta, el servidor está caído, etc.)
+                // La llamada de red falló antes de poder recibir una respuesta.
+                _uiState.update { it.copy(mensajeError = "No se pudo conectar al servidor", isLoading = false) }
+                // Imprimimos el error en la consola para depuración
+                e.printStackTrace()
             }
         }
     }
