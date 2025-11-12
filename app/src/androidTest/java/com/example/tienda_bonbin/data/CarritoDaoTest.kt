@@ -48,7 +48,7 @@ class CarritoDaoTest {
     @Throws(Exception::class)
     fun insertarItem_y_obtenerInfoDelCarrito() = runBlocking {
         // 1. ARRANGE (Preparar)
-        val usuario = Usuario(id = 1, nombre = "Test User", correo = "test@test.com", clave = "123", direccion = "Calle Falsa 123")
+        val usuario = Usuario(id = 1, nombre = "Test User", apellido = "Android", correo = "test@test.com", clave = "123", direccion = "Calle Falsa 123")
         val producto = Producto(id = 101, nombre = "Torta de Chocolate", precio = 25000.0, imagenUrl = "url_torta.jpg")
 
         // --- ↓↓↓ CORRECCIÓN FINAL Y CLAVE AQUÍ ↓↓↓ ---
