@@ -88,6 +88,7 @@ class LoginViewModel(
                     val usuarioParaDb = UsuarioDb(
                         id = usuarioDeRed.id!!.toInt(),
                         nombre = usuarioDeRed.nombre,
+                        apellido = usuarioDeRed.apellido,
                         correo = usuarioDeRed.correo,
                         clave = usuarioDeRed.contrasena,
                         direccion = usuarioDeRed.direccion

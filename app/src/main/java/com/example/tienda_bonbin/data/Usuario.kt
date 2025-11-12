@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
         @PrimaryKey(autoGenerate = true)
         val id: Int? = null,
         val nombre: String,
+        val apellido: String,
         val correo: String,
         val clave: String,
         val direccion: String

@@ -9,6 +9,11 @@ data class Usuario(
     @SerializedName("nombre")
     val nombre: String,
 
+
+    @SerializedName("apellido")
+    val apellido: String,
+
+
     @SerializedName("correo")
     val correo: String,
 

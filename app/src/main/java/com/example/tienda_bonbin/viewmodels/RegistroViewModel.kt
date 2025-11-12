@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 // 2. Añadimos un campo 'isLoading' para mostrar una barra de progreso
 data class RegistroUiState(
     val nombre: String = "",
+    val apellido: String = "",
     val correo: String = "",
     val clave: String = "",
     val confirmarClave: String = "",
@@ -34,10 +35,11 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : View
     private val _uiState = MutableStateFlow(RegistroUiState())
     val uiState: StateFlow<RegistroUiState> = _uiState.asStateFlow()
 
-    fun onRegistroValueChange(nombre: String? = null, correo: String? = null, clave: String? = null, confirmarClave: String? = null, direccion: String? = null, terminos: Boolean? = null) {
+    fun onRegistroValueChange(nombre: String? = null, apellido: String? = null, correo: String? = null, clave: String? = null, confirmarClave: String? = null, direccion: String? = null, terminos: Boolean? = null) {
         _uiState.update { currentState ->
             currentState.copy(
                 nombre = nombre ?: currentState.nombre,
+                apellido = apellido ?: currentState.apellido,
                 correo = correo ?: currentState.correo,
                 clave = clave ?: currentState.clave,
                 confirmarClave = confirmarClave ?: currentState.confirmarClave,
@@ -53,7 +55,7 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : View
         val state = uiState.value
 
         // Mantenemos todas tus excelentes validaciones
-        if (state.nombre.isBlank() || state.correo.isBlank() || state.clave.isBlank() || state.direccion.isBlank()) {
+        if (state.nombre.isBlank() || state.apellido.isBlank() ||state.correo.isBlank() || state.clave.isBlank() || state.direccion.isBlank()) {
             _uiState.update { it.copy(mensajeError = "Todos los campos son obligatorios") }
             return
         }
@@ -82,6 +84,7 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : View
 
                 val nuevoUsuario = Usuario(
                     nombre = state.nombre.trim(),
+                    apellido = state.apellido.trim(),
                     correo = state.correo.trim(),
                     contrasena = state.clave, // Usamos el nombre del campo del JSON: "contrasena"
                     direccion = state.direccion.trim()
@@ -99,6 +102,7 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : View
                     val usuarioParaDb = com.example.tienda_bonbin.data.Usuario(
                         id = usuarioRegistrado.id!!.toInt(),
                         nombre = usuarioRegistrado.nombre,
+                        apellido = usuarioRegistrado.apellido,
                         correo = usuarioRegistrado.correo,
                         clave = usuarioRegistrado.contrasena,
                         direccion = usuarioRegistrado.direccion

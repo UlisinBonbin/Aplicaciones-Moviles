@@ -10,7 +10,7 @@ object NetworkModule {
     // CAMBIA ESTA IP POR LA DE TU COMPUTADORA EN LA RED WIFI
     // Y ASEGÚRATE DE QUE EL PUERTO (ej: 8081) ES CORRECTO.
     // ¡DEBE TERMINAR CON UNA BARRA "/"!
-    private const val BASE_URL = "http://192.168.1.8:8081/"
+    private const val BASE_URL = "http://10.172.55.46:8081/"
 
 
     // Interceptor para ver las llamadas en Logcat (muy útil para depurar)
