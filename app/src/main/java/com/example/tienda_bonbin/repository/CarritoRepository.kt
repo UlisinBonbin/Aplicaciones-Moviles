@@ -1,53 +1,78 @@
 package com.example.tienda_bonbin.repository
 
-// Ya no necesitas la importación de 'copy', la eliminamos.
-import com.example.tienda_bonbin.data.CarritoItem
-import com.example.tienda_bonbin.data.CarritoDao
-import com.example.tienda_bonbin.data.CarritoItemInfo
+// --- IMPORTACIONES CORREGIDAS ---
+import com.example.tienda_bonbin.data.ApiService
+// ✅ ESTA ES LA ÚNICA IMPORTACIÓN DE CarritoItem QUE DEBE EXISTIR EN ESTE ARCHIVO
+import com.example.tienda_bonbin.data.model.CarritoItem
+import com.example.tienda_bonbin.data.NetworkModule
+import com.example.tienda_bonbin.data.model.dto.CarritoRequest
+import com.example.tienda_bonbin.data.model.dto.ProductoId
+import com.example.tienda_bonbin.data.model.dto.UsuarioId
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 
 /**
  * Repositorio para gestionar las operaciones del carrito de compras.
- * Habla con el CarritoDao para persistir los datos en la base de datos.
- *
- * @param carritoDao El objeto de acceso a datos para la tabla carrito_items.
+ * Ahora habla DIRECTAMENTE con la API a través de Retrofit.
+ * YA NO RECIBE CarritoDao EN EL CONSTRUCTOR.
  */
-class CarritoRepository(private val carritoDao: CarritoDao) {
+class CarritoRepository { // <-- Constructor vacío, ¡correcto!
+
+    // Obtenemos la instancia de ApiService desde nuestro NetworkModule
+    private val apiService: ApiService = NetworkModule.apiService
 
     /**
-     * Agrega un producto al carrito de un usuario.
-     *
-     * Si el producto ya está en el carrito, incrementa su cantidad en 1.
-     * Si no está, lo inserta en la base de datos con cantidad 1.
-     *
-     * @param productoId El ID del producto que se va a agregar.
-     * @param usuarioId El ID del usuario al que pertenece el carrito.
+     * Obtiene la lista de items del carrito del usuario DESDE EL SERVIDOR.
+     * El Flow ahora emite una lista del CarritoItem de la API.
      */
-    suspend fun agregarProducto(productoId: Int, usuarioId: Int) {
-        // 1. Busca si el item ya existe en la base de datos.
-        val itemExistente = carritoDao.obtenerItem(usuarioId, productoId)
-
-        if (itemExistente != null) {
-            // 2. Si ya existe, se incrementa la cantidad del objeto existente...
-            itemExistente.cantidad++
-            // ...y llamamos a la función `actualizar` del DAO.
-            carritoDao.actualizar(itemExistente)
-        } else {
-            // 3. Si no existe, creamos uno nuevo y lo insertamos.
-            val nuevoItem = CarritoItem(usuarioId = usuarioId, productoId = productoId, cantidad = 1)
-            carritoDao.insertar(nuevoItem)
+    fun obtenerItemsDelCarrito(usuarioId: Int): Flow<List<CarritoItem>> = flow {
+        try {
+            // Llamamos a la función de la API que definimos en ApiService
+            val response = apiService.getCarritoByUsuarioId(usuarioId.toLong())
+            if (response.isSuccessful) {
+                // Si la respuesta es exitosa, emitimos la lista de items que viene en el cuerpo
+                emit(response.body() ?: emptyList())
+            } else {
+                // Si el servidor da un error, emitimos una lista vacía
+                println("Error al obtener el carrito: ${response.code()} - ${response.message()}")
+                emit(emptyList())
+            }
+        } catch (e: Exception) {
+            // En caso de error de red (sin conexión), también emitimos una lista vacía
+            println("Excepción al obtener el carrito: ${e.message}")
+            emit(emptyList())
         }
     }
 
     /**
-     * Obtiene la lista de items del carrito con información detallada del producto.
+     * Llama a la API para AGREGAR un producto al carrito en el servidor.
      */
-    fun obtenerItemsDelCarrito(usuarioId: Int): Flow<List<CarritoItemInfo>> {
-        return carritoDao.obtenerItemsInfoDelCarrito(usuarioId)
+    suspend fun agregarProductoAlCarrito(productoId: Int, usuarioId: Int) {
+        val request = CarritoRequest(
+            usuario = UsuarioId(usuarioId.toLong()),
+            producto = ProductoId(productoId.toLong()),
+            cantidad = 1
+        )
+        try {
+            // Enviamos la petición
+            apiService.agregarItemAlCarrito(request)
+        } catch (e: Exception) {
+            println("Excepción al agregar al carrito: ${e.message}")
+        }
     }
 
-    suspend fun vaciarCarrito(usuarioId: Int) {
-        carritoDao.vaciarCarrito(usuarioId)
+    /**
+     * Llama a la API para ELIMINAR un solo ítem del carrito en el servidor.
+     */
+    suspend fun eliminarItemDelCarrito(itemId: Long): Response<Void> {
+        return apiService.eliminarItemDelCarrito(itemId)
     }
 
+    /**
+     * Llama a la API para VACIAR COMPLETAMENTE el carrito de un usuario en el servidor.
+     */
+    suspend fun limpiarCarrito(usuarioId: Int): Response<Void> {
+        return apiService.limpiarCarrito(usuarioId.toLong())
+    }
 }

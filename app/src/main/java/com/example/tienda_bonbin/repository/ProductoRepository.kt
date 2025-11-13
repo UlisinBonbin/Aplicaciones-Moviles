@@ -1,25 +1,25 @@
 package com.example.tienda_bonbin.repository
 
-import com.example.tienda_bonbin.data.Producto
-// --- 1. CORREGIR LA IMPORTACIÓN SI ES NECESARIO ---
-// Asegúrate de que el DAO se importe desde la carpeta 'dao'.
-import com.example.tienda_bonbin.data.ProductoDao
-import kotlinx.coroutines.flow.Flow
+import com.example.tienda_bonbin.data.ApiService
+import com.example.tienda_bonbin.data.NetworkModule
+// ✅ 1. Importamos el modelo de la API, no el de Room.
+import com.example.tienda_bonbin.data.model.Producto
 
-// --- 2. AÑADIR EL PARÁMETRO AL CONSTRUCTOR ---
-// Ahora la clase recibe un 'productoDao' y lo guarda como una propiedad privada.
-class ProductoRepository(private val productoDao: ProductoDao) {
+/**
+ * Repositorio para obtener los productos desde la API.
+ * ✅ 2. Su constructor ahora está vacío (ya no usa ProductoDao).
+ */
+class ProductoRepository {
 
-    /**
-     * Devuelve un Flow con todos los productos de la base de datos.
-     * Ahora 'productoDao' es una propiedad de la clase y se puede usar.
-     */
-    fun obtenerTodosLosProductos(): Flow<List<Producto>> = productoDao.obtenerTodos()
+    // Obtiene la instancia de ApiService para hacer llamadas de red.
+    private val apiService: ApiService = NetworkModule.apiService
 
     /**
-     * Inserta una lista de productos en la base de datos.
+     * ✅ 3. ESTA ES LA FUNCIÓN QUE TU VIEWMODEL ESTÁ BUSCANDO.
+     * Llama a la API para obtener la lista de todos los productos.
      */
-    suspend fun insertarTodos(productos: List<Producto>) {
-        productoDao.insertarTodos(productos)
+    suspend fun getProductos(): List<Producto> {
+        // Simplemente llama al método correspondiente en ApiService.
+        return apiService.getProductos()
     }
 }

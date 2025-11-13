@@ -2,91 +2,95 @@ package com.example.tienda_bonbin.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tienda_bonbin.data.CarritoItemInfo
+// ✅ 1. ¡IMPORTACIÓN CLAVE! Usamos el CarritoItem de la capa de RED, no el de Room.
+import com.example.tienda_bonbin.data.model.CarritoItem
+import com.example.tienda_bonbin.data.model.dto.CompraRequest
 import com.example.tienda_bonbin.repository.CarritoRepository
-// --- 1. IMPORTACIONES AÑADIDAS ---
 import com.example.tienda_bonbin.repository.CompraRepository
 import com.example.tienda_bonbin.repository.SessionRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-// --- 2. ESTADO DE LA UI ACTUALIZADO ---
-// Se añade el campo para mostrar mensajes al usuario (Snackbars)
+// ✅ 2. ESTADO DE LA UI ACTUALIZADO. La lista es del nuevo tipo CarritoItem.
 data class CarritoUiState(
-    val items: List<CarritoItemInfo> = emptyList(),
+    val items: List<CarritoItem> = emptyList(), // <-- Tipo corregido
     val total: Double = 0.0,
-    val mensajeUsuario: String? = null // Para los mensajes de "Compra finalizada", "Carrito vaciado", etc.
+    val mensajeUsuario: String? = null
 )
 
-// --- 3. CONSTRUCTOR DEL VIEWMODEL ACTUALIZADO ---
-// Ahora sí pide el CompraRepository, que es lo que espera el AppViewModelProvider.
+// ✅ 3. CONSTRUCTOR SIN CAMBIOS, sigue siendo correcto.
 class CarritoViewModel(
     private val carritoRepository: CarritoRepository,
-    private val compraRepository: CompraRepository, // <-- AÑADIDO
+    private val compraRepository: CompraRepository,
     private val sessionRepository: SessionRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CarritoUiState())
     val uiState = _uiState.asStateFlow()
 
+    private var userId: Int? = null
+
     init {
-        cargarItemsDelCarrito()
+        // Obtenemos el userId una sola vez y lo guardamos
+        viewModelScope.launch {
+            userId = sessionRepository.userIdFlow.first()
+            if (userId != null) {
+                // Empezamos a escuchar los cambios en el carrito
+                cargarItemsDelCarrito(userId!!)
+            }
+        }
     }
 
-    private fun cargarItemsDelCarrito() {
+
+    private fun cargarItemsDelCarrito(usuarioId: Int) {
         viewModelScope.launch {
-            val userId = sessionRepository.userIdFlow.first()
-            if (userId != null) {
-                carritoRepository.obtenerItemsDelCarrito(userId).collect { items ->
-                    val totalCalculado = items.sumOf { it.precio * it.cantidad }
-                    // Se usa .update para modificar el estado de forma segura
-                    _uiState.update { it.copy(items = items, total = totalCalculado) }
+            carritoRepository.obtenerItemsDelCarrito(usuarioId).collect { itemsFromApi ->
+                // El total se calcula a partir del precio del producto anidado.
+                val totalCalculado = itemsFromApi.sumOf { it.producto.precio * it.cantidad }
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        items = itemsFromApi,
+                        total = totalCalculado
+                    )
                 }
             }
         }
     }
 
-    // --- 4. NUEVAS FUNCIONES AÑADIDAS ---
 
-    /**
-     * Llama al repositorio para vaciar el carrito del usuario actual
-     * y muestra un mensaje de confirmación.
-     */
-    fun vaciarCarrito() {
+    fun refrescarCarrito() {
+        userId?.let { cargarItemsDelCarrito(it) }
+    }
+
+
+    fun eliminarItem(itemId: Long) {
         viewModelScope.launch {
-            val userId = sessionRepository.userIdFlow.first()
-            if (userId != null) {
-                carritoRepository.vaciarCarrito(userId)
-                _uiState.update { it.copy(mensajeUsuario = "El carrito ha sido vaciado") }
+            val response = carritoRepository.eliminarItemDelCarrito(itemId)
+            if (response.isSuccessful) {
+                refrescarCarrito() // Recargamos el carrito desde el servidor
+            } else {
+                _uiState.update { it.copy(mensajeUsuario = "Error al eliminar el producto") }
             }
         }
     }
 
-    /**
-     * Orquesta el proceso de finalizar una compra:
-     * 1. Llama al CompraRepository para crear la compra y sus detalles.
-     * 2. Llama al CarritoRepository para vaciar el carrito.
-     * 3. Muestra un mensaje de éxito.
-     */
+
     fun finalizarCompra() {
         viewModelScope.launch {
-            val userId = sessionRepository.userIdFlow.first()
-            // Asegurarnos de que hay un usuario y de que hay items en el carrito
             if (userId != null && _uiState.value.items.isNotEmpty()) {
-                compraRepository.crearCompraDesdeCarrito(userId, _uiState.value.items)
-                carritoRepository.vaciarCarrito(userId) // Se vacía después de confirmar la compra
-                _uiState.update { it.copy(mensajeUsuario = "¡Gracias por tu compra!") }
+                val request = CompraRequest(usuarioId = userId!!.toLong())
+                val response = compraRepository.registrarCompra(request)
+                if(response.isSuccessful) {
+                    // Si la compra es exitosa, el backend ya vació el carrito. Refrescamos la UI.
+                    refrescarCarrito()
+                    _uiState.update { it.copy(mensajeUsuario = "¡Gracias por tu compra!") }
+                } else {
+                    _uiState.update { it.copy(mensajeUsuario = "Error al procesar la compra") }
+                }
             }
         }
     }
 
-    /**
-     * Resetea el mensaje del usuario después de que ha sido mostrado en la UI.
-     * Esto evita que el Snackbar aparezca de nuevo si la pantalla se recompone.
-     */
     fun mensajeMostrado() {
         _uiState.update { it.copy(mensajeUsuario = null) }
     }

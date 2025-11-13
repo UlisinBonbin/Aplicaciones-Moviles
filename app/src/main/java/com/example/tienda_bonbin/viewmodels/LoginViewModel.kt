@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.example.tienda_bonbin.data.NetworkModule
-import com.example.tienda_bonbin.data.ApiService.LoginRequest
+import com.example.tienda_bonbin.data.model.dto.LoginRequest
 
 // Importa la entidad de la base de datos 'Usuario' y le pone un alias 'UsuarioDb'
 // para no confundirla con el 'Usuario' del modelo de red.
