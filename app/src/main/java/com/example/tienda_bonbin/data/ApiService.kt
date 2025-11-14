@@ -9,6 +9,7 @@ import com.example.tienda_bonbin.data.model.Usuario
 import com.example.tienda_bonbin.data.model.dto.CarritoRequest
 import com.example.tienda_bonbin.data.model.dto.CompraRequest
 import com.example.tienda_bonbin.data.model.dto.LoginRequest
+import com.example.tienda_bonbin.data.model.dto.LoginResponse
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -21,7 +22,7 @@ interface ApiService {
     suspend fun registrarUsuario(@Body usuario: Usuario): Response<Usuario>
 
     @POST("api/v1/usuarios/login")
-    suspend fun login(@Body loginRequest: LoginRequest): Response<Usuario>
+    suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
     @GET("api/v1/productos")
     suspend fun getProductos(): List<Producto>

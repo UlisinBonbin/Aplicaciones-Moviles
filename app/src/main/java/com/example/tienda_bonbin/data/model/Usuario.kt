@@ -22,5 +22,10 @@ data class Usuario(
     val contrasena: String,
 
     @SerializedName("direccion")
-    val direccion: String
+    val direccion: String,
+
+    @SerializedName("rol")
+    val rol: String
+
+
 )

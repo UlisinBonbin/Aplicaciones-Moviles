@@ -12,7 +12,8 @@ object AppViewModelProvider {
         // Inicializador para RegistroViewModel
         initializer {
             RegistroViewModel(
-                usuarioRepository = bonbinApplication().container.usuarioRepository
+                usuarioRepository = bonbinApplication().container.usuarioRepository,
+                apiService = bonbinApplication().container.apiService
             )
         }
 
@@ -20,7 +21,8 @@ object AppViewModelProvider {
         initializer {
             LoginViewModel(
                 usuarioRepository = bonbinApplication().container.usuarioRepository,
-                sessionRepository = bonbinApplication().container.sessionRepository
+                sessionRepository = bonbinApplication().container.sessionRepository,
+                apiService = bonbinApplication().container.apiService
             )
         }
 

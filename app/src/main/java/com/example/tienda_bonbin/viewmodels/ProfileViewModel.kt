@@ -53,7 +53,7 @@ class ProfileViewModel(
     fun cerrarSesion() {
         viewModelScope.launch {
             // Le pedimos al SessionRepository que borre el ID guardado.
-            sessionRepository.clearUserId()
+            sessionRepository.clearSession()
             // El `collect` en el `init` detectará este cambio y pondrá el usuario a null.
             // Adicionalmente, marcamos `sesionCerrada` para que la UI pueda navegar.
             _uiState.update { it.copy(sesionCerrada = true) }

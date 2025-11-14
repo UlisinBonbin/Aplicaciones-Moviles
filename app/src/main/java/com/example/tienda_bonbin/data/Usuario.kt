@@ -9,5 +9,6 @@ import androidx.room.PrimaryKey
         val apellido: String,
         val correo: String,
         val clave: String,
-        val direccion: String
+        val direccion: String,
+        val rol: String
     )

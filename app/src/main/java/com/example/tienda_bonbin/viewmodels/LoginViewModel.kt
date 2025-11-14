@@ -1,7 +1,9 @@
 package com.example.tienda_bonbin.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tienda_bonbin.data.ApiService
 import com.example.tienda_bonbin.repository.SessionRepository
 import com.example.tienda_bonbin.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,24 +25,16 @@ data class LoginUiState(
     val mensajeError: String? = null,
     val isLoading: Boolean = false // Para mostrar una rueda de carga mientras se valida
 )
-
-/**
- * ViewModel para la lógica de la pantalla de Login.
- *
- * @param usuarioRepository Repositorio para acceder a los datos de los usuarios (Room).
- * @param sessionRepository Repositorio para gestionar la sesión del usuario (DataStore).
- */
 class LoginViewModel(
     private val usuarioRepository: UsuarioRepository,
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
+    private val apiService: ApiService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState = _uiState.asStateFlow()
 
-    /**
-     * Se llama desde la UI cada vez que el usuario escribe en los campos de texto.
-     */
+    // El onLoginValueChange no cambia.
     fun onLoginValueChange(correo: String? = null, clave: String? = null) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -54,70 +48,76 @@ class LoginViewModel(
      * Orquesta el proceso de inicio de sesión cuando el usuario pulsa el botón.
      */
     fun iniciarSesion() {
-        // Validación básica, se queda igual
         if (uiState.value.correo.isBlank() || uiState.value.clave.isBlank()) {
             _uiState.update { it.copy(mensajeError = "Correo y contraseña son obligatorios") }
             return
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) } // Activa el indicador de carga
+            _uiState.update { it.copy(isLoading = true) }
 
             try {
-                // 1. Crea el objeto para la petición de red
                 val loginRequest = LoginRequest(
                     correo = uiState.value.correo.trim(),
                     contrasena = uiState.value.clave
                 )
 
-                // 2. Llama al servidor a través de Retrofit (NetworkModule)
-                val response = NetworkModule.apiService.login(loginRequest)
+                val response = apiService.login(loginRequest)
 
                 // 3. Comprueba la respuesta del servidor
-                if (response.isSuccessful && response.body() != null) {
-                    // ¡LOGIN ONLINE CORRECTO! El servidor respondió con 200 OK y un usuario
-                    val usuarioDeRed = response.body()!!
+                if (response.isSuccessful) {
+                    // ✅ 4. AHORA EL BODY ES UN 'LoginResponse', NO UN 'Usuario'
+                    val loginResponse = response.body()
 
-                    // 4. Guarda el ID del usuario en DataStore para mantener la sesión
-                    usuarioDeRed.id?.let { idNoNulo ->
-                        sessionRepository.saveUserId(idNoNulo.toInt())
+                    if (loginResponse != null) {
+                        // ¡LOGIN ONLINE CORRECTO!
+                        val usuarioDeRed = loginResponse.usuario
+
+                        // ✅ 5. GUARDAMOS LA SESIÓN COMPLETA: ID, TOKEN Y ROL
+                        sessionRepository.saveSession(
+                            userId = usuarioDeRed.id!!.toInt(),
+                            token = loginResponse.token,
+                            role = usuarioDeRed.rol
+                        )
+
+                        // 6. GUARDAMOS EL USUARIO EN LA BASE DE DATOS LOCAL (Room)
+                        //    (Esta parte es opcional pero la mantenemos si la usas en otras pantallas)
+                        val usuarioParaDb = UsuarioDb(
+                            id = usuarioDeRed.id.toInt(),
+                            nombre = usuarioDeRed.nombre,
+                            apellido = usuarioDeRed.apellido,
+                            correo = usuarioDeRed.correo,
+                            // No guardamos la contraseña en la base de datos local por seguridad.
+                            clave = "",
+                            direccion = usuarioDeRed.direccion,
+                            rol = usuarioDeRed.rol // Guardamos también el rol
+                        )
+                        usuarioRepository.insertarUsuario(usuarioParaDb)
+
+                        // 7. Actualiza la UI para navegar a la siguiente pantalla
+                        _uiState.update { it.copy(loginExitoso = true, isLoading = false) }
+
+                    } else {
+                        // Error raro: la respuesta fue 200 OK pero el cuerpo estaba vacío
+                        _uiState.update { it.copy(mensajeError = "Respuesta inesperada del servidor", isLoading = false) }
                     }
-
-                    // 5. MAPEA y guarda el usuario en la BASE DE DATOS LOCAL (Room)
-                    //    Así otras pantallas pueden leer los datos del usuario rápidamente.
-                    val usuarioParaDb = UsuarioDb(
-                        id = usuarioDeRed.id!!.toInt(),
-                        nombre = usuarioDeRed.nombre,
-                        apellido = usuarioDeRed.apellido,
-                        correo = usuarioDeRed.correo,
-                        clave = usuarioDeRed.contrasena,
-                        direccion = usuarioDeRed.direccion
-                    )
-                    usuarioRepository.insertarUsuario(usuarioParaDb)
-
-                    // 6. Actualiza la UI para que pueda navegar a la siguiente pantalla
-                    _uiState.update { it.copy(loginExitoso = true, isLoading = false) }
 
                 } else {
                     // ERROR DEL SERVIDOR (ej. 401 Unauthorized - contraseña incorrecta)
-                    // El servidor respondió, pero con un código de error.
                     _uiState.update { it.copy(mensajeError = "Correo o contraseña incorrectos", isLoading = false) }
                 }
 
             } catch (e: Exception) {
-                // ERROR DE RED (No hay internet, IP incorrecta, el servidor está caído, etc.)
-                // La llamada de red falló antes de poder recibir una respuesta.
-                _uiState.update { it.copy(mensajeError = "No se pudo conectar al servidor", isLoading = false) }
-                // Imprimimos el error en la consola para depuración
+                // ERROR DE RED
+                _uiState.update { it.copy(mensajeError = "No se pudo conectar al servidor: ${e.message}", isLoading = false) }
                 e.printStackTrace()
             }
         }
     }
 
-    /**
-     * Se llama desde la UI para resetear el mensaje de error una vez que se ha mostrado.
-     */
+    // errorMostrado() no cambia.
     fun errorMostrado() {
         _uiState.update { it.copy(mensajeError = null) }
     }
+
 }

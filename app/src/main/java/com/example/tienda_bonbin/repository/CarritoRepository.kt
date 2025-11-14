@@ -17,10 +17,9 @@ import retrofit2.Response
  * Ahora habla DIRECTAMENTE con la API a través de Retrofit.
  * YA NO RECIBE CarritoDao EN EL CONSTRUCTOR.
  */
-class CarritoRepository { // <-- Constructor vacío, ¡correcto!
+class CarritoRepository(private val apiService: ApiService) { // <-- Constructor vacío, ¡correcto!
 
     // Obtenemos la instancia de ApiService desde nuestro NetworkModule
-    private val apiService: ApiService = NetworkModule.apiService
 
     /**
      * Obtiene la lista de items del carrito del usuario DESDE EL SERVIDOR.

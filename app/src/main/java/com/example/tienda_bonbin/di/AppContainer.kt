@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.tienda_bonbin.data.ApiService
 import com.example.tienda_bonbin.data.AppDatabase
 import com.example.tienda_bonbin.repository.CarritoRepository
 import com.example.tienda_bonbin.repository.CompraRepository
@@ -21,11 +22,14 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
  * Las definiciones aquí no cambian.
  */
 interface AppContainer {
+    val apiService: ApiService
     val usuarioRepository: UsuarioRepository
     val sessionRepository: SessionRepository
     val productoRepository: ProductoRepository
     val carritoRepository: CarritoRepository
     val compraRepository: CompraRepository
+
+    val dataStore: DataStore<Preferences>
 }
 
 /**
@@ -34,30 +38,37 @@ interface AppContainer {
  */
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
-    // ✅ CORRECCIÓN: Ahora se instancia sin parámetros (constructor vacío).
+    override val sessionRepository: SessionRepository by lazy {
+        // Usa el context.dataStore que está definido a nivel de archivo
+        SessionRepository(context.dataStore)
+    }
+
+    override val apiService: ApiService by lazy {
+        // Ahora llamamos a getApiService pasándole el repositorio que acabamos de crear.
+        com.example.tienda_bonbin.data.NetworkModule.getApiService(sessionRepository)
+    }
+
+    override val dataStore: DataStore<Preferences> by lazy {
+        context.dataStore
+    }
+
+    // ✅ PASO 2: ARREGLA LOS REPOSITORIOS QUE NECESITAN ApiService
+    // Ahora les pasamos la instancia de 'apiService' que creamos arriba.
     override val productoRepository: ProductoRepository by lazy {
-        ProductoRepository()
+        ProductoRepository(apiService)
     }
 
-    // ✅ CORRECCIÓN: Ahora se instancia sin parámetros (constructor vacío).
     override val carritoRepository: CarritoRepository by lazy {
-        CarritoRepository()
+        CarritoRepository(apiService)
     }
 
-    // ✅ CORRECCIÓN: Ahora se instancia sin parámetros (constructor vacío).
     override val compraRepository: CompraRepository by lazy {
-        CompraRepository()
+        CompraRepository(apiService)
     }
 
-    // El UsuarioRepository todavía puede depender de Room si quieres mantener los datos
-    // del usuario logueado de forma local, o lo podemos cambiar también.
-    // Por ahora, lo dejamos como estaba para no romper el login.
+    // Estos de abajo no dependen de la red, así que se quedan igual.
     override val usuarioRepository: UsuarioRepository by lazy {
         UsuarioRepository(AppDatabase.getDatabase(context).usuarioDao())
     }
 
-    // SessionRepository no cambia, siempre depende de DataStore.
-    override val sessionRepository: SessionRepository by lazy {
-        SessionRepository(context.dataStore)
-    }
 }

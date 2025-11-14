@@ -1,40 +1,53 @@
 package com.example.tienda_bonbin.data
 
+import android.content.Context
+// ❌ ELIMINA ESTAS IMPORTACIONES, ya no las necesita
+// import com.example.tienda_bonbin.BonbinApplication
+import com.example.tienda_bonbin.repository.SessionRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 object NetworkModule {
-    // CAMBIA ESTA IP POR LA DE TU COMPUTADORA EN LA RED WIFI
-    // Y ASEGÚRATE DE QUE EL PUERTO (ej: 8081) ES CORRECTO.
-    // ¡DEBE TERMINAR CON UNA BARRA "/"!
     private const val BASE_URL = "http://192.168.1.6:8081/"
-
-
-    // Interceptor para ver las llamadas en Logcat (muy útil para depurar)
-    private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-
-    // Cliente OkHttp que usa el interceptor
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .build()
-
-    // Constructor de Retrofit
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(client) // Usamos el cliente con el logger
-        .addConverterFactory(GsonConverterFactory.create()) // Usa Gson para convertir JSON
-        .build()
+    private var apiService: ApiService? = null
 
     /**
-     * Esta es la instancia que usaremos en el resto de la app
-     * para hacer las llamadas a la API.
+     * ✅ FUNCIÓN PÚBLICA SIMPLIFICADA
+     * Ahora recibe el SessionRepository directamente.
+     * Ya no necesita el 'Context'.
+     *
+     * @param sessionRepository La instancia del repositorio de sesión.
      */
-    val apiService: ApiService by lazy {
-        retrofit.create(ApiService::class.java)
+    // ✅ 1. CAMBIA LA FIRMA DE LA FUNCIÓN
+    fun getApiService(sessionRepository: SessionRepository): ApiService {
+        if (apiService == null) {
+
+            // ❌ 2. ELIMINA LA CREACIÓN DEL REPOSITORIO
+            // val sessionRepository = SessionRepository((context.applicationContext as BonbinApplication).dataStore)
+
+            // B. Creamos nuestro interceptor de autorización, pasándole el repositorio que recibimos.
+            val authInterceptor = AuthInterceptor(sessionRepository) // <--- ¡Usa el que viene como parámetro!
+
+            // C, D, E y F se quedan exactamente igual...
+            val loggingInterceptor = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(authInterceptor)
+                .addInterceptor(loggingInterceptor)
+                .build()
+
+            val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+            apiService = retrofit.create(ApiService::class.java)
+        }
+        return apiService!!
     }
 }

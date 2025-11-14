@@ -3,6 +3,7 @@ package com.example.tienda_bonbin.viewmodels
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tienda_bonbin.data.ApiService
 // 1. Asegúrate de que el import de Usuario apunte a la clase del paquete 'model'
 import com.example.tienda_bonbin.data.model.Usuario
 import com.example.tienda_bonbin.data.NetworkModule
@@ -30,7 +31,7 @@ data class RegistroUiState(
 )
 
 // 3. Quitamos el repositorio del constructor por ahora para simplificar
-class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : ViewModel() {
+class RegistroViewModel(private val usuarioRepository: UsuarioRepository, private val apiService: ApiService) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistroUiState())
     val uiState: StateFlow<RegistroUiState> = _uiState.asStateFlow()
@@ -87,12 +88,15 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : View
                     apellido = state.apellido.trim(),
                     correo = state.correo.trim(),
                     contrasena = state.clave, // Usamos el nombre del campo del JSON: "contrasena"
-                    direccion = state.direccion.trim()
+                    direccion = state.direccion.trim(),
+                    rol = "CLIENTE"
                 )
 
                 // --- ¡AQUÍ ESTÁ LA MAGIA! ---
                 // Llamamos directamente al ApiService que creamos en NetworkModule
-                val response = NetworkModule.apiService.registrarUsuario(nuevoUsuario)
+                val response = apiService.registrarUsuario(nuevoUsuario)
+
+                // --- 5. ---
 
                 if (response.isSuccessful && response.body() != null) {
                     // ÉXITO: El servidor respondió con un código 2xx
@@ -104,8 +108,9 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : View
                         nombre = usuarioRegistrado.nombre,
                         apellido = usuarioRegistrado.apellido,
                         correo = usuarioRegistrado.correo,
-                        clave = usuarioRegistrado.contrasena,
-                        direccion = usuarioRegistrado.direccion
+                        clave = "",
+                        direccion = usuarioRegistrado.direccion,
+                        rol = "CLIENTE"
                     )
 
                     usuarioRepository.insertarUsuario(usuarioParaDb)
