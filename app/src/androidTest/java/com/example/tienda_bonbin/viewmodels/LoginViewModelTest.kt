@@ -6,6 +6,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.example.tienda_bonbin.data.AppDatabase
+import com.example.tienda_bonbin.data.NetworkModule
 import com.example.tienda_bonbin.repository.SessionRepository
 import com.example.tienda_bonbin.repository.UsuarioRepository
 import com.example.tienda_bonbin.viewmodels.LoginViewModel
@@ -48,10 +49,12 @@ class LoginViewModelTest {
         val usuarioRepository = UsuarioRepository(db.usuarioDao())
 
         // Se crea el SessionRepository usando la instancia de DataStore definida para este test.
+
         val sessionRepository = SessionRepository(context.testDataStore)
 
+        val apiService = NetworkModule.getApiService(sessionRepository)
         // 4. Inicializamos el ViewModel con las dependencias.
-        viewModel = LoginViewModel(usuarioRepository, sessionRepository)
+        viewModel = LoginViewModel(usuarioRepository, sessionRepository, apiService)
     }
 
     @After
