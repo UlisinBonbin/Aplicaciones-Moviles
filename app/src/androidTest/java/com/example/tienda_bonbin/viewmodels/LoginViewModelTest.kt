@@ -1,7 +1,7 @@
 package com.example.tienda_bonbin.viewmodels
 
 import android.content.Context
-import androidx.datastore.preferences.core.edit // <-- AÑADIR ESTA LÍNEA
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -9,7 +9,6 @@ import com.example.tienda_bonbin.data.AppDatabase
 import com.example.tienda_bonbin.data.NetworkModule
 import com.example.tienda_bonbin.repository.SessionRepository
 import com.example.tienda_bonbin.repository.UsuarioRepository
-import com.example.tienda_bonbin.viewmodels.LoginViewModel
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*
@@ -36,7 +35,7 @@ class LoginViewModelTest {
 
     @Before
     fun setUp() {
-        // 1. Obtenemos el contexto de la aplicación bajo prueba.
+        // 1.Se obtiene el contexto de la aplicación bajo prueba.
         context = ApplicationProvider.getApplicationContext<Context>()
 
         // 2. Creamos una base de datos EN MEMORIA específica para el test.

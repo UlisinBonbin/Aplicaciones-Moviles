@@ -51,20 +51,17 @@ class CarritoDaoTest {
         val usuario = Usuario(id = 1, nombre = "Test User", apellido = "Android", correo = "test@test.com", clave = "123", direccion = "Calle Falsa 123", rol = "USER")
         val producto = Producto(id = 101, nombre = "Torta de Chocolate", precio = 25000.0, imagenUrl = "url_torta.jpg")
 
-        // --- ↓↓↓ CORRECCIÓN FINAL Y CLAVE AQUÍ ↓↓↓ ---
 
-        // 1. Usamos la función de UsuarioDao: `insertarUsuario`
+        // 1, Se usa la función de UsuarioDao: insertarUsuario
         usuarioDao.insertarUsuario(usuario)
 
-        // 2. Usamos la función de ProductoDao: `insertarTodos`, pasándole una lista
+        // 2. Sd usa la función de ProductoDao: insertarTodos, pasándole una lista
         productoDao.insertarTodos(listOf(producto))
 
-        // --- ↑↑↑ FIN DE LA CORRECIÓN ↑↑↑ ---
 
         val carritoItem = CarritoItem(usuarioId = 1, productoId = 101, cantidad = 2)
 
-        // 2. ACT (Actuar)
-        // Usamos la función de CarritoDao: `insertar` (¡Asegúrate de que se llame así en tu CarritoDao!)
+        // Usamos la función de CarritoDao: `insertar` (Se tiene que llamar igual que en el CarritoDao)
         carritoDao.insertar(carritoItem)
 
         // 3. ASSERT (Verificar)
