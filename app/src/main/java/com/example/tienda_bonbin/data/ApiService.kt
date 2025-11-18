@@ -1,7 +1,6 @@
 package com.example.tienda_bonbin.data
 
-// --- IMPORTACIONES CORREGIDAS Y COMPLETAS ---
-// ✅ Se añaden explícitamente las clases del paquete 'model' que se usan en la interfaz.
+
 import com.example.tienda_bonbin.data.model.CarritoItem
 import com.example.tienda_bonbin.data.model.Compra
 import com.example.tienda_bonbin.data.model.Producto
@@ -45,8 +44,6 @@ interface ApiService {
 
     @DELETE("api/v1/carrito/limpiar/{usuarioId}")
     suspend fun limpiarCarrito(@Path("usuarioId") usuarioId: Long): Response<Void>
-
-    // --- Endpoints de Compra ---
 
     @POST("api/v1/compras")
     suspend fun registrarCompra(@Body request: CompraRequest): Response<Compra>

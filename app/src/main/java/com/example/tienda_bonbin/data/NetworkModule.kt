@@ -1,8 +1,4 @@
 package com.example.tienda_bonbin.data
-
-import android.content.Context
-// ❌ ELIMINA ESTAS IMPORTACIONES, ya no las necesita
-// import com.example.tienda_bonbin.BonbinApplication
 import com.example.tienda_bonbin.repository.SessionRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,8 +20,6 @@ object NetworkModule {
     fun getApiService(sessionRepository: SessionRepository): ApiService {
         if (apiService == null) {
 
-            // ❌ 2. ELIMINA LA CREACIÓN DEL REPOSITORIO
-            // val sessionRepository = SessionRepository((context.applicationContext as BonbinApplication).dataStore)
 
             // B. Creamos nuestro interceptor de autorización, pasándole el repositorio que recibimos.
             val authInterceptor = AuthInterceptor(sessionRepository) // <--- ¡Usa el que viene como parámetro!

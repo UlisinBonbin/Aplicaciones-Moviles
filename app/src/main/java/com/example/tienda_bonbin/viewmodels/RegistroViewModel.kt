@@ -51,7 +51,7 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository, privat
         }
     }
 
-    // 4. --- FUNCIÓN PRINCIPAL ACTUALIZADA ---
+    // 4. FUNCIÓN PRINCIPAL
     fun registrarUsuario() {
         val state = uiState.value
 
@@ -92,7 +92,6 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository, privat
                     rol = "CLIENTE"
                 )
 
-                // --- ¡AQUÍ ESTÁ LA MAGIA! ---
                 // Llamamos directamente al ApiService que creamos en NetworkModule
                 val response = apiService.registrarUsuario(nuevoUsuario)
 
