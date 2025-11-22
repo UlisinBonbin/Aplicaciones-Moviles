@@ -83,6 +83,13 @@ fun HomeScreen(
             CategoriesSection(viewModel = viewModel)
             FeaturedProductsSection(viewModel = viewModel)
             Spacer(modifier = Modifier.height(24.dp))
+
+            WhyOurCakesSection()
+            Spacer(modifier = Modifier.height(32.dp))
+            whereAreOur()
+
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -325,4 +332,103 @@ fun ProductCard(imageUrl: String, title: String, price: String) {
             }
         }
     }
+}
+
+@Composable
+fun WhyOurCakesSection() {
+    val imageUrl = "https://thumbs.dreamstime.com/b/lindo-chef-mascota-ilustraci%C3%B3n-de-dise%C3%B1o-kawaii-simple-y-vectorial-plantilla-186722633.jpg"
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = "¿Por qué nuestras tortas son las mejores?",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = DarkTextColor
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Llevamos más de 25 años creando tortas artesanales con ingredientes frescos y seleccionados. " +
+                    "Cada receta se prepara con dedicación y cuidado en cada detalle, para que tus celebraciones " +
+                    "sean realmente especiales.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = DarkTextColor
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(imageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Tortas artesanales",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+@Composable
+fun whereAreOur(){
+    val imageUrl = "https://t3.ftcdn.net/jpg/09/23/57/78/360_F_923577884_VXKlnv2AJ1TXV7hIYM5OkfanmibInRXh.jpg"
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = "¿Donde estamos ubicados?",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = DarkTextColor
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Estamos ubicados en 2478 Bartolomé de Las Casas.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = DarkTextColor
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(imageUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Ubicación pasteleria",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+
 }
