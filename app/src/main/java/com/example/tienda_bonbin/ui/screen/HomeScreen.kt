@@ -37,8 +37,6 @@ import com.example.tienda_bonbin.ui.theme.DarkTextColor
 import com.example.tienda_bonbin.ui.theme.SoftPink
 import com.example.tienda_bonbin.viewmodels.MainViewModel
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -52,7 +50,7 @@ fun HomeScreen(
                     Text(
                         "Pastelería Mil Sabores",
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White // Color de texto blanco para que contraste
+                        color = Color.White
                     )
                 },
                 actions = {
@@ -76,7 +74,7 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(CreamBackground) // <-- CAMBIO DE COLOR DE FONDO
+                .background(CreamBackground)
         ) {
             HorizontalNavBar(viewModel = viewModel)
             WelcomeBanner()
@@ -247,7 +245,6 @@ fun CategoryCard(icon: ImageVector, text: String, onClick: () -> Unit) {
 
 @Composable
 fun FeaturedProductsSection(viewModel: MainViewModel) {
-    // --- ↓↓↓ AJUSTA ESTA LISTA ↓↓↓ ---
     val productos = listOf(
         Producto(
             id = 1, // ID de ejemplo
@@ -297,7 +294,6 @@ fun FeaturedProductsSection(viewModel: MainViewModel) {
                 ProductCard(
                     imageUrl = producto.imagenUrl,
                     title = producto.nombre,
-                    // Formatear el precio de Double a String
                     price = "$${"%,.0f".format(producto.precio).replace(',', '.')}"
                 )
             }
