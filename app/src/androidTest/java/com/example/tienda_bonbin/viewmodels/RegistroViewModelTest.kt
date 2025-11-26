@@ -108,4 +108,20 @@ class RegistroViewModelTest {
         assertFalse(estadoActual.registroExitoso)
     }
 
+    @Test
+    fun falla_por_no_aceptar_terminos() = runBlocking {
+        viewModel.onRegistroValueChange(
+            nombre = "Test",
+            apellido = "User",
+            correo = "ulises@gmail.com",
+            clave = "password123",
+            confirmarClave = "password123",
+            direccion = "Calle Falsa 123",
+            terminos = false
+        )
+        viewModel.registrarUsuario()
+        val estadoActual = viewModel.uiState.value
+        assertEquals("Debes aceptar los términos y condiciones", estadoActual.mensajeError)
+        assertFalse(estadoActual.registroExitoso)
+    }
 }
