@@ -3,6 +3,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
+
 @Dao
 interface UsuarioDao {
 
@@ -14,6 +16,12 @@ interface UsuarioDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarUsuario(usuario: Usuario)
+
+    /**
+     * Actualiza un usuario existente en la base de datos.
+     */
+    @Update
+    suspend fun actualizarUsuario(usuario: Usuario)
 
     /**
      * Busca y devuelve un usuario por su dirección de correo electrónico.

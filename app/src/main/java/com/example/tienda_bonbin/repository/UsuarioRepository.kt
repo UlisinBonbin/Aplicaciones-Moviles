@@ -5,42 +5,62 @@ import com.example.tienda_bonbin.data.UsuarioDao
 import com.example.tienda_bonbin.data.Usuario // Modelo de la Base de Datos (Room)
 import com.example.tienda_bonbin.data.model.Usuario as NetworkUsuario // Modelo de la Red (Retrofit)
 
-/**
- * Repositorio que centraliza la lógica de datos del usuario, tanto local como remota.
- *
- * @param usuarioDao El DAO para acceder a la base de datos local.
- * @param apiService El servicio de Retrofit para acceder al backend.
- */
 class UsuarioRepository(
     private val usuarioDao: UsuarioDao,
     private val apiService: ApiService
 ) {
 
-    /**
-     * Registra un nuevo usuario. Primero en el backend y luego, si es exitoso,
-     * en la base de datos local.
-     *
-     * @param networkUsuario El objeto de usuario (modelo de red) a registrar.
-     * @return Un objeto [Result] que encapsula el éxito o el fracaso de la operación.
-     */
     suspend fun registrarUsuario(networkUsuario: NetworkUsuario): Result<Unit> {
         return try {
             val response = apiService.registrarUsuario(networkUsuario)
             if (response.isSuccessful && response.body() != null) {
-                // Éxito en el backend: Mapear la respuesta y guardarla localmente.
                 val usuarioDesdeApi = response.body()!!
-                val usuarioParaDb = usuarioDesdeApi.toDbModel()
+
+                // FIX: Construir el usuario para la DB manualmente
+                // Usamos la contraseña de la petición original, ya que la respuesta no la trae
+                val usuarioParaDb = Usuario(
+                    id = usuarioDesdeApi.id?.toInt(),
+                    nombre = usuarioDesdeApi.nombre,
+                    apellido = usuarioDesdeApi.apellido,
+                    correo = usuarioDesdeApi.correo,
+                    clave = networkUsuario.contrasena, // <- Se guarda la contraseña original
+                    direccion = usuarioDesdeApi.direccion,
+                    rol = usuarioDesdeApi.rol
+                )
+
                 usuarioDao.insertarUsuario(usuarioParaDb)
                 Result.success(Unit)
             } else {
-                // Error del servidor (ej. 4xx, 5xx).
                 val errorMsg = response.errorBody()?.string() ?: "Error de registro en el servidor."
                 Result.failure(Exception(errorMsg))
             }
         } catch (e: Exception) {
-            // Error de red (sin conexión, etc.) o cualquier otra excepción.
             Result.failure(e)
         }
+    }
+
+    /**
+     * Actualiza un usuario desde la red, pero preservando la contraseña local.
+     */
+    suspend fun actualizarUsuarioDesdeRed(networkUsuario: NetworkUsuario) {
+        val userId = networkUsuario.id?.toInt() ?: return
+
+        // 1. Obtener el usuario actual de la DB para no perder la clave
+        val usuarioLocal = usuarioDao.obtenerUsuarioPorId(userId)
+
+        // 2. Construir el objeto para la DB, combinando los datos nuevos con la clave vieja
+        val usuarioParaDb = Usuario(
+            id = userId,
+            nombre = networkUsuario.nombre,
+            apellido = networkUsuario.apellido,
+            correo = networkUsuario.correo,
+            clave = usuarioLocal?.clave ?: "", // <- Se preserva la clave existente
+            direccion = networkUsuario.direccion,
+            rol = networkUsuario.rol
+        )
+
+        // 3. Insertar/reemplazar en la base de datos
+        usuarioDao.insertarUsuario(usuarioParaDb)
     }
 
     suspend fun insertarUsuario(usuario: Usuario) {
@@ -52,22 +72,4 @@ class UsuarioRepository(
     }
 
     suspend fun obtenerUsuarioPorId(usuarioId: Int): Usuario? = usuarioDao.obtenerUsuarioPorId(usuarioId)
-}
-
-/**
- * Función de extensión para mapear un `NetworkUsuario` (de la API)
- * a un `Usuario` (para la base de datos local).
- */
-private fun NetworkUsuario.toDbModel(): Usuario {
-    require(this.id != null) { "El ID del usuario de la API no puede ser nulo." }
-    return Usuario(
-        id = this.id.toInt(), // Convertimos el Long de la API a Int para Room
-        nombre = this.nombre,
-        apellido = this.apellido,
-        correo = this.correo,
-        // IMPORTANTE: No guardamos la contraseña en texto plano en la DB local.
-        clave = "",
-        direccion = this.direccion,
-        rol = this.rol
-    )
 }
