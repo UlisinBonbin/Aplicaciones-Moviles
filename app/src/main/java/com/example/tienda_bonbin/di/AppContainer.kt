@@ -19,7 +19,6 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
 
 /**
  * Contenedor de dependencias para toda la aplicación.
- * Las definiciones aquí no cambian.
  */
 interface AppContainer {
     val apiService: ApiService
@@ -34,17 +33,14 @@ interface AppContainer {
 
 /**
  * Implementación del contenedor que crea las instancias.
- * AHORA CREA LOS REPOSITORIOS DE RED, QUE TIENEN CONSTRUCTORES VACÍOS.
  */
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val sessionRepository: SessionRepository by lazy {
-        // Usa el context.dataStore que está definido a nivel de archivo
         SessionRepository(context.dataStore)
     }
 
     override val apiService: ApiService by lazy {
-        // Ahora llamamos a getApiService pasándole el repositorio que acabamos de crear.
         com.example.tienda_bonbin.data.NetworkModule.getApiService(sessionRepository)
     }
 
@@ -52,8 +48,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         context.dataStore
     }
 
-    // ✅ PASO 2: ARREGLA LOS REPOSITORIOS QUE NECESITAN ApiService
-    // Ahora les pasamos la instancia de 'apiService' que creamos arriba.
     override val productoRepository: ProductoRepository by lazy {
         ProductoRepository(apiService)
     }
@@ -66,9 +60,15 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         CompraRepository(apiService)
     }
 
-    // Estos de abajo no dependen de la red, así que se quedan igual.
+    /**
+     * Ahora UsuarioRepository también depende de la red.
+     * Le pasamos tanto el DAO local como el servicio de API remoto.
+     */
     override val usuarioRepository: UsuarioRepository by lazy {
-        UsuarioRepository(AppDatabase.getDatabase(context).usuarioDao())
+        UsuarioRepository(
+            usuarioDao = AppDatabase.getDatabase(context).usuarioDao(),
+            apiService = apiService
+        )
     }
 
 }

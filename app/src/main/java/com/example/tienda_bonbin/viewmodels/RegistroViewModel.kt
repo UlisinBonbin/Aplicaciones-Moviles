@@ -3,20 +3,15 @@ package com.example.tienda_bonbin.viewmodels
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tienda_bonbin.data.ApiService
-// 1. Asegúrate de que el import de Usuario apunte a la clase del paquete 'model'
-import com.example.tienda_bonbin.data.model.Usuario
-import com.example.tienda_bonbin.data.NetworkModule
+// 1. EL VIEWMODEL YA NO NECESITA CONOCER APISERVICE NI NETWORKMODULE
+import com.example.tienda_bonbin.data.model.Usuario as NetworkUsuario
 import com.example.tienda_bonbin.repository.UsuarioRepository
-// Quita la dependencia del Repositorio por ahora, llamaremos a la red directamente
-// import com.example.tienda_bonbin.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-// 2. Añadimos un campo 'isLoading' para mostrar una barra de progreso
 data class RegistroUiState(
     val nombre: String = "",
     val apellido: String = "",
@@ -25,13 +20,13 @@ data class RegistroUiState(
     val confirmarClave: String = "",
     val direccion: String = "",
     val terminosAceptados: Boolean = false,
-    val isLoading: Boolean = false, // Para saber cuándo mostrar un spinner de carga
+    val isLoading: Boolean = false,
     val registroExitoso: Boolean = false,
     val mensajeError: String? = null
 )
 
-// 3. Quitamos el repositorio del constructor por ahora para simplificar
-class RegistroViewModel(private val usuarioRepository: UsuarioRepository, private val apiService: ApiService) : ViewModel() {
+// 2. EL CONSTRUCTOR AHORA SOLO DEPENDE DEL REPOSITORIO
+class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistroUiState())
     val uiState: StateFlow<RegistroUiState> = _uiState.asStateFlow()
@@ -46,17 +41,17 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository, privat
                 confirmarClave = confirmarClave ?: currentState.confirmarClave,
                 direccion = direccion ?: currentState.direccion,
                 terminosAceptados = terminos ?: currentState.terminosAceptados,
-                mensajeError = null // Limpiamos el error al cambiar un campo
+                mensajeError = null
             )
         }
     }
 
-    // 4. FUNCIÓN PRINCIPAL
+    // 3. FUNCIÓN DE REGISTRO SIMPLIFICADA
     fun registrarUsuario() {
         val state = uiState.value
 
-        // Mantenemos todas tus excelentes validaciones
-        if (state.nombre.isBlank() || state.apellido.isBlank() ||state.correo.isBlank() || state.clave.isBlank() || state.direccion.isBlank()) {
+        // Se mantienen las validaciones de la UI
+        if (state.nombre.isBlank() || state.apellido.isBlank() || state.correo.isBlank() || state.clave.isBlank() || state.direccion.isBlank()) {
             _uiState.update { it.copy(mensajeError = "Todos los campos son obligatorios") }
             return
         }
@@ -77,57 +72,28 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository, privat
             return
         }
 
-        // Si todo es válido, lanzamos la corrutina para llamar a la API
         viewModelScope.launch {
-            try {
-                // Estado de carga: ON
-                _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true) }
 
-                val nuevoUsuario = Usuario(
-                    nombre = state.nombre.trim(),
-                    apellido = state.apellido.trim(),
-                    correo = state.correo.trim(),
-                    contrasena = state.clave, // Usamos el nombre del campo del JSON: "contrasena"
-                    direccion = state.direccion.trim(),
-                    rol = "CLIENTE"
-                )
+            // Se crea el objeto de red que espera el repositorio
+            val nuevoUsuario = NetworkUsuario(
+                nombre = state.nombre.trim(),
+                apellido = state.apellido.trim(),
+                correo = state.correo.trim(),
+                contrasena = state.clave,
+                direccion = state.direccion.trim(),
+                rol = "CLIENTE"
+            )
 
-                // Llamamos directamente al ApiService que creamos en NetworkModule
-                val response = apiService.registrarUsuario(nuevoUsuario)
+            // 4. SE DELEGA TODA LA LÓGICA AL REPOSITORIO
+            val resultado = usuarioRepository.registrarUsuario(nuevoUsuario)
 
-                // --- 5. ---
-
-                if (response.isSuccessful && response.body() != null) {
-                    // ÉXITO: El servidor respondió con un código 2xx
-                    val usuarioRegistrado = response.body()!!
-                    println("¡Usuario registrado con éxito en el servidor!: $usuarioRegistrado")
-
-                    val usuarioParaDb = com.example.tienda_bonbin.data.Usuario(
-                        id = usuarioRegistrado.id!!.toInt(),
-                        nombre = usuarioRegistrado.nombre,
-                        apellido = usuarioRegistrado.apellido,
-                        correo = usuarioRegistrado.correo,
-                        clave = "",
-                        direccion = usuarioRegistrado.direccion,
-                        rol = "CLIENTE"
-                    )
-
-                    usuarioRepository.insertarUsuario(usuarioParaDb)
-                    _uiState.update { it.copy(isLoading = false, registroExitoso = true) }
-
-                    // Opcional: Aquí podrías guardar el usuario en tu base de datos local (Room)
-                    // si tuvieras un repositorio para ello.
-                } else {
-                    // ERROR DEL SERVIDOR: El servidor respondió con un error (4xx, 5xx)
-                    val errorBody = response.errorBody()?.string()
-                    println("Error del servidor: ${response.code()} - $errorBody")
-                    _uiState.update { it.copy(isLoading = false, mensajeError = "Error del servidor: ${response.code()}. Revisa la consola del backend.") }
-                }
-
-            } catch (e: Exception) {
-                // ERROR DE RED: No se pudo conectar al servidor (no hay internet, IP incorrecta, etc.)
-                println("Error de red: ${e.message}")
-                _uiState.update { it.copy(isLoading = false, mensajeError = "No se pudo conectar al servidor. Revisa tu conexión y la IP.") }
+            // 5. SE ACTUALIZA LA UI BASÁNDOSE EN EL RESULTADO
+            resultado.onSuccess {
+                _uiState.update { it.copy(isLoading = false, registroExitoso = true) }
+            }
+            resultado.onFailure { error ->
+                _uiState.update { it.copy(isLoading = false, mensajeError = error.message ?: "Ocurrió un error desconocido") }
             }
         }
     }
