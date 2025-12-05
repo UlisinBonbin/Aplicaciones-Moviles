@@ -140,6 +140,16 @@ fun ProfileScreen(
                             value = usuario.nombre,
                             onEditClick = { /* No-op */ }
                         )
+                        Divider()
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        InfoRow(
+                            icon = Icons.Default.Person,
+                            label = "Apellido",
+                            value = usuario.apellido,
+                            onEditClick = { /* No-op */ }
+                        )
+
                         Divider(modifier = Modifier.padding(vertical = 8.dp))
                         InfoRow(
                             icon = Icons.Default.Email,
@@ -169,7 +179,7 @@ fun ProfileScreen(
                     Text("Cerrar Sesión", color = Color.White)
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(2.dp))
 
                 OutlinedButton(
                     onClick = {
