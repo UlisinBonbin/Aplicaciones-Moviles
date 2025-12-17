@@ -21,8 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-// --- ANTES ---
-// Se importaba el modelo de Room. ¡Este era el punto de conflicto!
 import com.example.tienda_bonbin.data.model.Producto
 import com.example.tienda_bonbin.ui.theme.ChocolateBrown
 import com.example.tienda_bonbin.ui.theme.CreamBackground
@@ -38,10 +36,8 @@ fun CatalogoScreen(
     navController: NavController,
     catalogoViewModel: CatalogoViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    // La obtención del estado era igual
     val uiState by catalogoViewModel.uiState.collectAsState()
 
-    // La lógica del Snackbar también era la misma
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -85,9 +81,6 @@ fun CatalogoScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // --- ANTES ---
-                // El `items` era idéntico, pero el objeto `producto` dentro de `uiState.productos`
-                // era del tipo de Room, no de la API.
                 items(uiState.productos) { producto ->
                     ProductCardWithCartButton(
                         producto = producto,
@@ -116,10 +109,10 @@ fun ProductCardWithCartButton(
             Column {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(producto.imagenUrl) // Funcionaba porque el campo se llamaba igual
+                        .data(producto.imagenUrl)
                         .crossfade(true)
                         .build(),
-                    contentDescription = producto.nombre, // Funcionaba porque el campo se llamaba igual
+                    contentDescription = producto.nombre,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -129,7 +122,6 @@ fun ProductCardWithCartButton(
                     Text(text = producto.nombre, style = MaterialTheme.typography.titleMedium, maxLines = 2, color = DarkTextColor)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        // La única diferencia visual podría ser el formato del precio si antes era Int y ahora Double
                         text = "$${"%,.0f".format(producto.precio).replace(',', '.')}",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,

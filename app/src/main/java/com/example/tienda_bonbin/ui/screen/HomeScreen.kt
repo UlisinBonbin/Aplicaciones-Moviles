@@ -62,7 +62,7 @@ fun HomeScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = ChocolateBrown, // <-- CAMBIO DE COLOR
+                    containerColor = ChocolateBrown,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -102,7 +102,7 @@ fun HorizontalNavBar(viewModel: MainViewModel) {
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        item { NavBarItem(text = "Inicio", onClick = { /* Ya estás aquí */ }, isSelected = true) }
+        item { NavBarItem(text = "Inicio", onClick = { /* */ }, isSelected = true) }
         item { NavBarItem(text = "Catálogo", onClick = { viewModel.navigateTo(Screen.Catalogo) }) }
         item { NavBarItem(text = "Mi Perfil", onClick = { viewModel.navigateTo(Screen.Profile) }) }
 
@@ -281,7 +281,7 @@ fun FeaturedProductsSection(viewModel: MainViewModel) {
                 color = DarkTextColor
             )
             TextButton(onClick = { viewModel.navigateTo(Screen.Catalogo) }) {
-                Text("Ver todo", color = SoftPink) // <-- CAMBIO DE COLOR
+                Text("Ver todo", color = SoftPink)
                 Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null, modifier = Modifier.size(18.dp), tint = SoftPink)
             }
         }
@@ -324,7 +324,7 @@ fun ProductCard(imageUrl: String, title: String, price: String) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(text = title, style = MaterialTheme.typography.titleMedium, maxLines = 2, minLines = 2, color = DarkTextColor)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = price, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = SoftPink) // <-- CAMBIO DE COLOR
+                Text(text = price, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = SoftPink)
             }
         }
     }

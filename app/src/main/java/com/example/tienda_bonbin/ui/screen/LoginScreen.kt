@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-// --- 1. SE ELIMINA LA IMPORTACIÓN DEL ICONO, YA NO SE USA ---
-// import androidx.compose.material.icons.Icons
-// import androidx.compose.material.icons.automirrored.filled.KeyboardBackspace
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment

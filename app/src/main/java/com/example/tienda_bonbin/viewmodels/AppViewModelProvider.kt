@@ -34,7 +34,7 @@ object AppViewModelProvider {
             )
         }
 
-        // --- INICIALIZADOR ÚNICO Y CORRECTO PARA CatalogoViewModel ---
+        // Inicializador de CatalogoViewModel
         initializer {
             CatalogoViewModel(
                 sessionRepository = bonbinApplication().container.sessionRepository,
@@ -54,10 +54,6 @@ object AppViewModelProvider {
     }
 }
 
-/**
- * Función de extensión para obtener la instancia de la aplicación
- * y poder acceder al contenedor de dependencias de forma segura.
- */
 fun CreationExtras.bonbinApplication(): BonbinApplication =
     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BonbinApplication)
 

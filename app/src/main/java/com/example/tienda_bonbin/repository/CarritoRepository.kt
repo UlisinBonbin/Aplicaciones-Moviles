@@ -1,8 +1,6 @@
 package com.example.tienda_bonbin.repository
 
-// --- IMPORTACIONES CORREGIDAS ---
 import com.example.tienda_bonbin.data.ApiService
-// ✅ ESTA ES LA ÚNICA IMPORTACIÓN DE CarritoItem QUE DEBE EXISTIR EN ESTE ARCHIVO
 import com.example.tienda_bonbin.data.model.CarritoItem
 import com.example.tienda_bonbin.data.NetworkModule
 import com.example.tienda_bonbin.data.model.dto.CarritoRequest
@@ -12,11 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 
-/**
- * Repositorio para gestionar las operaciones del carrito de compras.
- * Ahora habla DIRECTAMENTE con la API a través de Retrofit.
- * YA NO RECIBE CarritoDao EN EL CONSTRUCTOR.
- */
 class CarritoRepository(private val apiService: ApiService) { // <-- Constructor vacío, ¡correcto!
 
     // Obtenemos la instancia de ApiService desde nuestro NetworkModule

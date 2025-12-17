@@ -13,11 +13,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
 
-// Importamos todas las clases de datos que vamos a usar en el test
-import com.example.tienda_bonbin.data.CarritoItem
-import com.example.tienda_bonbin.data.CarritoItemInfo
-import com.example.tienda_bonbin.data.Producto
-import com.example.tienda_bonbin.data.Usuario
 
 @RunWith(AndroidJUnit4::class)
 class CarritoDaoTest {
@@ -47,24 +42,18 @@ class CarritoDaoTest {
     @Test
     @Throws(Exception::class)
     fun insertarItem_y_obtenerInfoDelCarrito() = runBlocking {
-        // 1. ARRANGE (Preparar)
         val usuario = Usuario(id = 1, nombre = "Test User", apellido = "Android", correo = "test@test.com", clave = "123", direccion = "Calle Falsa 123", rol = "USER")
         val producto = Producto(id = 101, nombre = "Torta de Chocolate", precio = 25000.0, imagenUrl = "url_torta.jpg")
 
-
-        // 1, Se usa la función de UsuarioDao: insertarUsuario
         usuarioDao.insertarUsuario(usuario)
 
-        // 2. Sd usa la función de ProductoDao: insertarTodos, pasándole una lista
         productoDao.insertarTodos(listOf(producto))
 
 
         val carritoItem = CarritoItem(usuarioId = 1, productoId = 101, cantidad = 2)
 
-        // Usamos la función de CarritoDao: `insertar` (Se tiene que llamar igual que en el CarritoDao)
         carritoDao.insertar(carritoItem)
 
-        // 3. ASSERT (Verificar)
         val itemsInfoRecuperados = carritoDao.obtenerItemsInfoDelCarrito(1).first()
 
         val itemInfoEsperado = CarritoItemInfo(

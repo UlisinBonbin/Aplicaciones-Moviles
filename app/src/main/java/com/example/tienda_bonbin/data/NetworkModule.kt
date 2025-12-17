@@ -6,25 +6,16 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkModule {
-    private const val BASE_URL = "http://192.168.1.6:8081/"
+    private const val BASE_URL = "http://192.168.1.8:8081/"
     private var apiService: ApiService? = null
 
-    /**
-     * ✅ FUNCIÓN PÚBLICA SIMPLIFICADA
-     * Ahora recibe el SessionRepository directamente.
-     * Ya no necesita el 'Context'.
-     *
-     * @param sessionRepository La instancia del repositorio de sesión.
-     */
-    // ✅ 1. CAMBIA LA FIRMA DE LA FUNCIÓN
     fun getApiService(sessionRepository: SessionRepository): ApiService {
         if (apiService == null) {
 
 
-            // B. Creamos nuestro interceptor de autorización, pasándole el repositorio que recibimos.
-            val authInterceptor = AuthInterceptor(sessionRepository) // <--- ¡Usa el que viene como parámetro!
+            // Creamos nuestro interceptor de autorización, pasándole el repositorio que recibimos.
+            val authInterceptor = AuthInterceptor(sessionRepository)
 
-            // C, D, E y F se quedan exactamente igual...
             //Esto Activa el Logcat cuando la aplicacion se esta emulando en el dispositivo
             val loggingInterceptor = HttpLoggingInterceptor().apply  {
                 level = HttpLoggingInterceptor.Level.BODY

@@ -2,7 +2,6 @@ package com.example.tienda_bonbin.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-// ✅ 1. ¡IMPORTACIÓN CLAVE! Usamos el CarritoItem de la capa de RED, no el de Room.
 import com.example.tienda_bonbin.data.model.CarritoItem
 import com.example.tienda_bonbin.data.model.dto.CompraRequest
 import com.example.tienda_bonbin.repository.CarritoRepository
@@ -11,14 +10,13 @@ import com.example.tienda_bonbin.repository.SessionRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-// ✅ 2. ESTADO DE LA UI ACTUALIZADO. La lista es del nuevo tipo CarritoItem.
+
 data class CarritoUiState(
-    val items: List<CarritoItem> = emptyList(), // <-- Tipo corregido
+    val items: List<CarritoItem> = emptyList(),
     val total: Double = 0.0,
     val mensajeUsuario: String? = null
 )
 
-// ✅ 3. CONSTRUCTOR SIN CAMBIOS, sigue siendo correcto.
 class CarritoViewModel(
     private val carritoRepository: CarritoRepository,
     private val compraRepository: CompraRepository,
@@ -31,11 +29,9 @@ class CarritoViewModel(
     private var userId: Int? = null
 
     init {
-        // Obtenemos el userId una sola vez y lo guardamos
         viewModelScope.launch {
             userId = sessionRepository.userIdFlow.first()
             if (userId != null) {
-                // Empezamos a escuchar los cambios en el carrito
                 cargarItemsDelCarrito(userId!!)
             }
         }

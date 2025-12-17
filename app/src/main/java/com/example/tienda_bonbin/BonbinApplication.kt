@@ -13,12 +13,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = SESSION_PREFERENCES_NAME
 )
 class BonbinApplication : Application() {
-    /**
-     * El contenedor de dependencias se crea una sola vez cuando la app se inicia.
-     */
     lateinit var container: AppContainer
-
-
 
     override fun onCreate() {
         super.onCreate()

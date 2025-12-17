@@ -17,9 +17,6 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = SESSION_DATA_NAME
 )
 
-/**
- * Contenedor de dependencias para toda la aplicación.
- */
 interface AppContainer {
     val apiService: ApiService
     val usuarioRepository: UsuarioRepository
@@ -31,9 +28,6 @@ interface AppContainer {
     val dataStore: DataStore<Preferences>
 }
 
-/**
- * Implementación del contenedor que crea las instancias.
- */
 class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val sessionRepository: SessionRepository by lazy {
@@ -60,10 +54,6 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
         CompraRepository(apiService)
     }
 
-    /**
-     * Ahora UsuarioRepository también depende de la red.
-     * Le pasamos tanto el DAO local como el servicio de API remoto.
-     */
     override val usuarioRepository: UsuarioRepository by lazy {
         UsuarioRepository(
             usuarioDao = AppDatabase.getDatabase(context).usuarioDao(),

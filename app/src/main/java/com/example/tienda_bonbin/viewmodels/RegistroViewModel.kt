@@ -3,7 +3,6 @@ package com.example.tienda_bonbin.viewmodels
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-// 1. EL VIEWMODEL YA NO NECESITA CONOCER APISERVICE NI NETWORKMODULE
 import com.example.tienda_bonbin.data.model.Usuario as NetworkUsuario
 import com.example.tienda_bonbin.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +24,6 @@ data class RegistroUiState(
     val mensajeError: String? = null
 )
 
-// 2. EL CONSTRUCTOR AHORA SOLO DEPENDE DEL REPOSITORIO
 class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegistroUiState())
@@ -46,11 +44,9 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : View
         }
     }
 
-    // 3. FUNCIÓN DE REGISTRO SIMPLIFICADA
     fun registrarUsuario() {
         val state = uiState.value
 
-        // Se mantienen las validaciones de la UI
         if (state.nombre.isBlank() || state.apellido.isBlank() || state.correo.isBlank() || state.clave.isBlank() || state.direccion.isBlank()) {
             _uiState.update { it.copy(mensajeError = "Todos los campos son obligatorios") }
             return
@@ -85,10 +81,8 @@ class RegistroViewModel(private val usuarioRepository: UsuarioRepository) : View
                 rol = "CLIENTE"
             )
 
-            // 4. SE DELEGA TODA LA LÓGICA AL REPOSITORIO
             val resultado = usuarioRepository.registrarUsuario(nuevoUsuario)
 
-            // 5. SE ACTUALIZA LA UI BASÁNDOSE EN EL RESULTADO
             resultado.onSuccess {
                 _uiState.update { it.copy(isLoading = false, registroExitoso = true) }
             }

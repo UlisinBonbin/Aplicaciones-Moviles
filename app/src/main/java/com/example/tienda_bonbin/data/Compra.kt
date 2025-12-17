@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
     foreignKeys = [
         ForeignKey(
             entity = Usuario::class, // Se relaciona con la clase Usuario
-            parentColumns = ["id"],  // Específicamente con la columna 'id' de la tabla 'usuarios'
+            parentColumns = ["id"],  // Específicamente con la columna 'id' de la tabla usuarios
             childColumns = ["usuarioId"], // A través de la columna 'usuarioId' de esta tabla
             onDelete = ForeignKey.CASCADE // Si se borra un usuario, se borran sus compras
         )

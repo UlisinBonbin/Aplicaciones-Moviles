@@ -1,5 +1,4 @@
-package com.example.tienda_bonbin.ui.screen // Tu paquete podría ser 'screens' o 'screen'
-
+package com.example.tienda_bonbin.ui.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,10 +15,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.tienda_bonbin.navigation.Screen // Asumo que tienes esta clase para tus rutas
+import com.example.tienda_bonbin.navigation.Screen
 import com.example.tienda_bonbin.ui.theme.*
 import com.example.tienda_bonbin.viewmodels.AppViewModelProvider
-import com.example.tienda_bonbin.viewmodels.RegistroViewModel // <-- CAMBIO 1: Importamos el ViewModel correcto
+import com.example.tienda_bonbin.viewmodels.RegistroViewModel
 
 @Composable
 fun RegistroScreen(
@@ -28,20 +27,19 @@ fun RegistroScreen(
 ){
     val uiState by viewModel.uiState.collectAsState()
 
-    // --- MANEJO DE EFECTOS (Navegación y Errores) ---
 
-    // 1. Navega a la pantalla de Login/Home cuando el registro es exitoso.
+    // Navega a la pantalla de Login/Home cuando el registro es exitoso.
     LaunchedEffect(uiState.registroExitoso) {
         if (uiState.registroExitoso) {
-            // Navega a la pantalla de login (o la que tú decidas)
-            navController.navigate(Screen.Home.route) { // Cambia "Screen.Home.route" por tu ruta de login si es diferente
+            // Navega a la pantalla de login
+            navController.navigate(Screen.Home.route) {
                 // Limpia la pila para que el usuario no pueda volver al registro
                 popUpTo(navController.graph.startDestinationId) { inclusive = true }
             }
         }
     }
 
-    // 2. Muestra un Snackbar cuando hay un error.
+    // Muestra un Snackbar cuando hay un error.
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(uiState.mensajeError) {
         uiState.mensajeError?.let { error ->
@@ -50,16 +48,15 @@ fun RegistroScreen(
         }
     }
 
-    // Usamos Scaffold para poder tener un Snackbar
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        containerColor = CreamBackground // Fondo de color crema para toda la pantalla
+        containerColor = CreamBackground
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(paddingValues) // <-- Padding del Scaffold
+                .padding(paddingValues)
                 .fillMaxSize()
-                .padding(horizontal = 32.dp) // Padding horizontal
+                .padding(horizontal = 32.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -79,10 +76,9 @@ fun RegistroScreen(
                 errorBorderColor = MaterialTheme.colorScheme.error // Color para el borde cuando hay error
             )
 
-            // --- CAMPOS DEL FORMULARIO (CONECTADOS AL VIEWMODEL) ---
+
 
             OutlinedTextField(
-                // <-- CAMBIO 4: Conectar cada campo al 'uiState' y a 'onRegistroValueChange'
                 value = uiState.nombre,
                 onValueChange = { viewModel.onRegistroValueChange(nombre = it) },
                 label = { Text("Nombre") },
@@ -165,10 +161,8 @@ fun RegistroScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- BOTONES DE ACCIÓN ---
 
             Button(
-                // <-- CAMBIO 5: La lógica de validación ahora está en el ViewModel
                 onClick = { viewModel.registrarUsuario() },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = SoftPink)

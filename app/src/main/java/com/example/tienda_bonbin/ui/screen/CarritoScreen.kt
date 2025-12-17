@@ -24,7 +24,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-// ✅ 1. CAMBIO DE IMPORTACIÓN: Usamos el CarritoItem de la API, no el de Room.
 import com.example.tienda_bonbin.data.model.CarritoItem
 import com.example.tienda_bonbin.ui.theme.ChocolateBrown
 import com.example.tienda_bonbin.ui.theme.CreamBackground
@@ -72,7 +71,6 @@ fun CarritoScreen(
                     ) {
                         Column {
                             Text("Total:", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
-                            // El formato del total no cambia
                             Text(
                                 text = "$${"%,.2f".format(uiState.total)}",
                                 style = MaterialTheme.typography.titleLarge,
@@ -92,7 +90,6 @@ fun CarritoScreen(
         }
     ) { innerPadding ->
         if (uiState.items.isEmpty()) {
-            // La pantalla de carrito vacío no cambia
             Box(
                 modifier = Modifier.padding(innerPadding).fillMaxSize().background(CreamBackground),
                 contentAlignment = Alignment.Center
@@ -109,9 +106,7 @@ fun CarritoScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // ✅ 2. CAMBIO EN LA KEY: La key ahora es el 'id' del CarritoItem, que es único.
                 items(uiState.items, key = { it.id }) { item ->
-                    // ✅ 3. CAMBIO DE PARÁMETRO: Pasamos el 'item' completo y el lambda para borrarlo.
                     CarritoItemRow(
                         item = item,
                         onDeleteClicked = { carritoViewModel.eliminarItem(item.id) }
@@ -122,7 +117,6 @@ fun CarritoScreen(
     }
 }
 
-// ✅ 4. CAMBIO FUNDAMENTAL: El composable ahora recibe el 'CarritoItem' de la API.
 @Composable
 private fun CarritoItemRow(item: CarritoItem, onDeleteClicked: () -> Unit) {
     Card(
@@ -131,28 +125,26 @@ private fun CarritoItemRow(item: CarritoItem, onDeleteClicked: () -> Unit) {
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            // ✅ 5. CAMBIO EN EL ACCESO A DATOS: Ahora accedemos a los datos a través de 'item.producto.propiedad'.
             Image(
                 painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
-                        .data(data = item.producto.imagenUrl) // <-- Acceso corregido
+                        .data(data = item.producto.imagenUrl)
                         .crossfade(true).build()
                 ),
-                contentDescription = item.producto.nombre, // <-- Acceso corregido
+                contentDescription = item.producto.nombre,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(80.dp).clip(MaterialTheme.shapes.medium)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = item.producto.nombre, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = DarkTextColor) // <-- Acceso corregido
-                Text(text = "$${"%,.2f".format(item.producto.precio)}", style = MaterialTheme.typography.bodyLarge, color = SoftPink, fontWeight = FontWeight.Medium) // <-- Acceso corregido
+                Text(text = item.producto.nombre, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = DarkTextColor)
+                Text(text = "$${"%,.2f".format(item.producto.precio)}", style = MaterialTheme.typography.bodyLarge, color = SoftPink, fontWeight = FontWeight.Medium)
             }
             Box(
                 modifier = Modifier.background(CreamBackground, shape = MaterialTheme.shapes.small).padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 Text("Cant: ${item.cantidad}", fontWeight = FontWeight.Bold, color = DarkTextColor, fontSize = 14.sp)
             }
-            // ✅ 6. AÑADIMOS EL BOTÓN DE BORRAR
             IconButton(onClick = onDeleteClicked) {
                 Icon(Icons.Default.Delete, contentDescription = "Eliminar item", tint = Color.Gray)
             }

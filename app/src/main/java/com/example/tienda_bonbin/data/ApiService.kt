@@ -12,9 +12,6 @@ import com.example.tienda_bonbin.data.model.dto.LoginResponse
 import retrofit2.Response
 import retrofit2.http.*
 
-/**
- * Interfaz que define todos los endpoints de la API para Retrofit.
- */
 interface ApiService {
 
     @POST("api/v1/usuarios")
@@ -28,11 +25,6 @@ interface ApiService {
 
     // --- Endpoints de Carrito ---
 
-    /**
-     * Obtiene el carrito de un usuario.
-     * ✅ Al tener el import correcto arriba, Kotlin ahora sabe que este 'CarritoItem'
-     * es 'com.example.tienda_bonbin.data.model.CarritoItem'.
-     */
     @GET("api/v1/carrito/{usuarioId}")
     suspend fun getCarritoByUsuarioId(@Path("usuarioId") usuarioId: Long): Response<List<CarritoItem>>
 
@@ -45,6 +37,7 @@ interface ApiService {
     @DELETE("api/v1/carrito/limpiar/{usuarioId}")
     suspend fun limpiarCarrito(@Path("usuarioId") usuarioId: Long): Response<Void>
 
+    // --- Endpoint de compra ---
     @POST("api/v1/compras")
     suspend fun registrarCompra(@Body request: CompraRequest): Response<Compra>
 }

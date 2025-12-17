@@ -2,7 +2,7 @@ package com.example.tienda_bonbin.repository
 
 import com.example.tienda_bonbin.data.ApiService
 import com.example.tienda_bonbin.data.UsuarioDao
-import com.example.tienda_bonbin.data.Usuario // Modelo de la Base de Datos (Room)
+import com.example.tienda_bonbin.data.Usuario
 import com.example.tienda_bonbin.data.model.Usuario as NetworkUsuario // Modelo de la Red (Retrofit)
 
 class UsuarioRepository(
@@ -16,8 +16,6 @@ class UsuarioRepository(
             if (response.isSuccessful && response.body() != null) {
                 val usuarioDesdeApi = response.body()!!
 
-                // FIX: Construir el usuario para la DB manualmente
-                // Usamos la contraseña de la petición original, ya que la respuesta no la trae
                 val usuarioParaDb = Usuario(
                     id = usuarioDesdeApi.id?.toInt(),
                     nombre = usuarioDesdeApi.nombre,
@@ -39,27 +37,24 @@ class UsuarioRepository(
         }
     }
 
-    /**
-     * Actualiza un usuario desde la red, pero preservando la contraseña local.
-     */
     suspend fun actualizarUsuarioDesdeRed(networkUsuario: NetworkUsuario) {
         val userId = networkUsuario.id?.toInt() ?: return
 
-        // 1. Obtener el usuario actual de la DB para no perder la clave
+        // Obtener el usuario actual de la DB para no perder la clave
         val usuarioLocal = usuarioDao.obtenerUsuarioPorId(userId)
 
-        // 2. Construir el objeto para la DB, combinando los datos nuevos con la clave vieja
+        // Construir el objeto para la DB, combinando los datos nuevos con la clave vieja
         val usuarioParaDb = Usuario(
             id = userId,
             nombre = networkUsuario.nombre,
             apellido = networkUsuario.apellido,
             correo = networkUsuario.correo,
-            clave = usuarioLocal?.clave ?: "", // <- Se preserva la clave existente
+            clave = usuarioLocal?.clave ?: "",
             direccion = networkUsuario.direccion,
             rol = networkUsuario.rol
         )
 
-        // 3. Insertar/reemplazar en la base de datos
+        // Insertar/reemplazar en la base de datos
         usuarioDao.insertarUsuario(usuarioParaDb)
     }
 

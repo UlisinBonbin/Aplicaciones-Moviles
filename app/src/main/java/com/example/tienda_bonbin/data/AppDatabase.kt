@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.tienda_bonbin.data.ProductoDao // Importa tu ProductoDao
+import com.example.tienda_bonbin.data.ProductoDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,8 +41,6 @@ abstract class AppDatabase : RoomDatabase() {
                     "bonbin_database"
                 )
                     .fallbackToDestructiveMigration()
-                    // --- 1. ¡LÍNEA AÑADIDA! ---
-                    // Ahora sí le decimos a Room que use nuestro Callback.
                     .addCallback(AppDatabaseCallback(context))
                     .build()
                 INSTANCE = instance

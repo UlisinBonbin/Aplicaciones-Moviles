@@ -18,11 +18,11 @@ class HomeScreenTest {
 
     @Test
     fun `MainViewModel navega a catalogo correctamente`() = runTest {
-        // ARRANGE
+        // Preparar
         val viewModel = MainViewModel()
 
-        // ACT & ASSERT
-        // Usamos 'test' de Turbine para escuchar el Flow de forma segura
+        // Actuar y verirficar
+        // Usamos test de Turbine para escuchar el Flow de forma segura
         viewModel.navigationEvents.test {
             // Primero, actuamos: llamamos a la función que emite el evento
             viewModel.navigateTo(Screen.Catalogo)
@@ -34,7 +34,7 @@ class HomeScreenTest {
             val eventoNavegacion = eventoEmitido as NavigationEvent.NavigateTo
             assertEquals(Screen.Catalogo.route, eventoNavegacion.route.route)
 
-            // Opcional: aseguramos que no se emitieron más eventos
+            // aseguramos que no se emitieron más eventos
             ensureAllEventsConsumed()
         }
     }
