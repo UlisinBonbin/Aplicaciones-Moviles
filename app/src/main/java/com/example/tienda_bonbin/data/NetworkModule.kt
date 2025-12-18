@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkModule {
-    private const val BASE_URL = "http://192.168.1.8:8081/"
+    private const val BASE_URL = "http://10.39.168.46:8081/"
     private var apiService: ApiService? = null
 
     fun getApiService(sessionRepository: SessionRepository): ApiService {
